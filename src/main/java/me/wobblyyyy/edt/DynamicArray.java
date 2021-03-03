@@ -579,6 +579,7 @@ public class DynamicArray<E> {
                               int min,
                               int max) {
         Object[] es = elements;
+
         if (query == null) {
             for (int i = min; i < max; i++) {
                 if (es[i] == null) {
@@ -594,6 +595,84 @@ public class DynamicArray<E> {
         }
 
         return -1;
+    }
+
+    /**
+     * Check to see if the entire {@code DynamicArray} is empty. The
+     * {@code DynamicArray} being empty is defined by the active size of
+     * the array being equal to zero.
+     *
+     * @return whether or not the {@code DynamicArray} is entirely empty.
+     */
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+
+    /**
+     * Check to see if the {@code DynamicArray} contains any instances of the
+     * queried element. If an instance of the element is found, this method
+     * will return true. If no instances of the element are found, this method
+     * will return false.
+     *
+     * @param query the element to query.
+     * @return true if the queried element is found inside of the
+     * {@code DynamicArray} at some point, false if it isn't.
+     */
+    public boolean contains(E query) {
+        return indexOf(query) >= 0;
+    }
+
+    /**
+     * Clear all of the values contained in the active portion of the array.
+     *
+     * <p>
+     * It's important to note that this method WILL NOT re-size the array. The
+     * active portion of the {@code DynamicArray} will still be whatever it was
+     * before. This method will, however, set all of the elements in the active
+     * portion of the array to be equal to null.
+     * </p>
+     */
+    public void clear() {
+        for (int i = 0; i < size(); i++) {
+            elements[i] = null;
+        }
+    }
+
+    /**
+     * This method will do exactly what these two methods normally do.
+     *
+     * <p>
+     * <ul>
+     *     <li>
+     *         {@link DynamicArray#clear()}
+     *     </li>
+     *     <li>
+     *         {@link DynamicArray#trim()}
+     *     </li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * In case it matters at all: The array will be cleared before it is
+     * trimmed. This shouldn't impact much, but yeah. There you go.
+     * </p>
+     */
+    public void clearAndTrim() {
+        clear();
+        trim();
+    }
+
+    /**
+     * Reset the entire array. Unlike the clear method, this method will
+     * actually reset the size of the array to zero and clear each and every
+     * one of the elements that was originally contained in it.
+     *
+     * @see DynamicArray#clear()
+     * @see DynamicArray#clearAndTrim()
+     * @see DynamicArray#trim()
+     */
+    public void reset() {
+        elements = new Object[minSize];
     }
 
     /**
