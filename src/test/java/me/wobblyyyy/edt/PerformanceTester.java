@@ -1,12 +1,16 @@
-package me.wobblyyyy.edt.dynarrays;
+package me.wobblyyyy.edt;
 
+import me.wobblyyyy.edt.DynamicArray;
 import org.junit.Test;
 
 import java.util.ArrayList;
 
-public class DoubleDynarrayTest {
+public class PerformanceTester {
     private void runTestA(double c) {
-        DoubleDynarray array = new DoubleDynarray((int) (c * 1000), 10000);
+        DynamicArray<Double> array = new DynamicArray<Double>(
+                (int) (0),
+                new Double[] {}
+        );
 
         for (int i = 0; i < c * 1000; i++) {
             array.add(i * 3 * c);
@@ -14,7 +18,7 @@ public class DoubleDynarrayTest {
     }
 
     private void runTestB(double c) {
-        ArrayList<Double> array = new ArrayList<>();
+        ArrayList<Double> array = new ArrayList<>((int) (0));
 
         for (int i = 0; i < c * 1000; i++) {
             array.add((double) (i * 3 * c));
@@ -28,13 +32,17 @@ public class DoubleDynarrayTest {
 
         timeTestA = System.nanoTime();
         runTestA(1000);
+        runTestA(2000);
+        runTestA(3000);
         timeTestA = System.nanoTime() - timeTestA;
 
         timeTestB = System.nanoTime();
         runTestB(1000);
+        runTestB(2000);
+        runTestB(3000);
         timeTestB = System.nanoTime() - timeTestB;
 
-        double delta = 100 - (timeTestA / timeTestB);
+        double delta = (timeTestA / timeTestB);
 
         System.out.println("Time A: " + timeTestA);
         System.out.println("Time B: " + timeTestB);

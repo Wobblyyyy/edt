@@ -1,5 +1,6 @@
-package me.wobblyyyy.edt.dynarrays;
+package me.wobblyyyy.edt;
 
+import me.wobblyyyy.edt.DynamicArray;
 import org.junit.Test;
 
 import java.util.Arrays;

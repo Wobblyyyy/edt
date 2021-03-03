@@ -1,4 +1,4 @@
-package me.wobblyyyy.edt.dynarrays;
+package me.wobblyyyy.edt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -404,6 +404,12 @@ public class DynamicArray<E> {
     /**
      * Remove the last-added element from the dynamic array. This simply
      * removes the element that's at the array's end point.
+     *
+     * <p>
+     * If the current active size of the {@code DynamicArray} is already too
+     * small to remove another element from, nothing happens and this method
+     * simply... well... doesn't do anything. Yeah. That's all.
+     * </p>
      */
     public void remove() {
         if (activeSize - 1 > minSize) {
@@ -477,6 +483,54 @@ public class DynamicArray<E> {
         expandArray(increase);
 
         elements[index] = value;
+    }
+
+    /**
+     * Get a value from the {@code DynamicArray} based on a provided index.
+     *
+     * <p>
+     * Before returning the specified value, check to see if the given index
+     * is valid using the {@link DynamicArray#checkIndex(int)} method. If the
+     * index is out of bounds, we throw an {@code ArrayIndexOutOfBounds}
+     * exception, indicating that the requested index is invalid.
+     * </p>
+     *
+     * @param index the index to query a value from.
+     * @return the value that comes from the index. If the index is out of
+     * the array's bounds, we don't do anything - an exception is thrown
+     * anyways, so we don't need to return anything.
+     */
+    @SuppressWarnings("unchecked")
+    public E get(int index) {
+        checkIndex(index);
+
+        return (E) elements[index];
+    }
+
+    /**
+     * Get an array of values based on an array of indices to query.
+     *
+     * <p>
+     * Before returning the specified value, check to see if the given index
+     * is valid using the {@link DynamicArray#checkIndex(int)} method. If the
+     * index is out of bounds, we throw an {@code ArrayIndexOutOfBounds}
+     * exception, indicating that the requested index is invalid.
+     * </p>
+     *
+     * @param indices all of the indices to query the value of.
+     * @return an array of the same size as the size of the input index array.
+     * If no values are found, or no values are added, an empty array is
+     * returned - that is, assuming there weren't any exceptions.
+     */
+    @SuppressWarnings("unchecked")
+    public E[] get(int[] indices) {
+        Object[] values = new Object[indices.length];
+
+        for (int i = 0; i < values.length; i++) {
+            values[i] = get(indices[i]);
+        }
+
+        return (E[]) values;
     }
 
     /**
