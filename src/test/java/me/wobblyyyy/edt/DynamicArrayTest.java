@@ -99,4 +99,14 @@ public class DynamicArrayTest {
         System.out.println("Fake Size: " + array.size());
         System.out.println("Real Size: " + array.realSize());
     }
+
+    @Test
+    public void testCasting() {
+        DynamicArray<Double> array = new DynamicArray<>();
+
+        array.add(10.0);
+
+        Double[] realArray = array.toDoubleArray();
+        System.out.println(Arrays.toString(realArray));
+    }
 }

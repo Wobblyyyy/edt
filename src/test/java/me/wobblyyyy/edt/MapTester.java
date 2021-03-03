@@ -5,50 +5,77 @@ import org.junit.Test;
 import java.util.HashMap;
 
 public class MapTester {
+    int times = 100;
+    int reps = 100;
+
     private void runTestA() {
         HashMap<String, Double> map = new HashMap<>();
 
-        for (int i = 0; i < 10000000; i++) {
+        for (int i = 0; i < times; i++) {
             map.put(
                     "Key! " + i,
                     i * Math.PI
             );
+        }
+
+        double b = 0;
+
+        for (int i = 0; i < times; i++) {
+//            b = map.get("Key! " + i);
         }
     }
 
     private void runTestB() {
         DynamicMap<String, Double> map = new DynamicMap<>();
 
-        for (int i = 0; i < 10000000; i++) {
+        for (int i = 0; i < times; i++) {
             map.add(
                     "Key! " + i,
                     i * Math.PI
             );
         }
+
+        double b = 0;
+
+        for (int i = 0; i < times; i++) {
+//            b = map.get("Key! " + i);
+        }
     }
 
     @Test
     public void testMapSpeed() {
-        long aB = System.nanoTime();
-        runTestA();
-        long aA = System.nanoTime();
+        double averageA = 0;
+        double averageB = 0;
 
-        long bB = System.nanoTime();
-        runTestB();
-        long bA = System.nanoTime();
+        DynamicArray<Double> timesA = new DynamicArray<>();
+        DynamicArray<Double> timesB = new DynamicArray<>();
 
-        System.out.println("Test A time: " + (aA - aB));
-        System.out.println("Test B time: " + (bA - bB));
+        long stopwatch;
 
-        aB = System.nanoTime();
-        runTestA();
-        aA = System.nanoTime();
+        for (int i = 0; i < reps; i++) {
+            stopwatch = System.nanoTime();
+            runTestA();
+            runTestA();
+            timesA.add(System.nanoTime() - stopwatch * 1.0);
 
-        bB = System.nanoTime();
-        runTestB();
-        bA = System.nanoTime();
+            stopwatch = System.nanoTime();
+            runTestB();
+            runTestB();
+            timesB.add(System.nanoTime() - stopwatch * 1.0);
+        }
 
-        System.out.println("Test A time: " + (aA - aB));
-        System.out.println("Test B time: " + (bA - bB));
+        for (Object o : timesA.toArray()) {
+            averageA += Double.parseDouble(o.toString());
+        }
+
+        for (Object o : timesB.toArray()) {
+            averageB += Double.parseDouble(o.toString());
+        }
+
+        averageA /= timesA.size();
+        averageB /= timesB.size();
+
+        System.out.println("Test A time: " + averageA);
+        System.out.println("Test B time: " + averageB);
     }
 }

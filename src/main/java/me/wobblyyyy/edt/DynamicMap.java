@@ -11,12 +11,26 @@ import java.util.ArrayList;
  * @author Colin Robertson
  */
 public class DynamicMap<K, V> {
-    private DynamicArray<K> keys;
-    private DynamicArray<V> values;
+    private final DynamicArray<K> keys;
+    private final DynamicArray<V> values;
 
     public DynamicMap() {
-        keys = new DynamicArray<K>(10, new Object[0]);
-        values = new DynamicArray<V>(10, new Object[0]);
+        this(0);
+    }
+
+    public DynamicMap(int minSize) {
+        keys = new DynamicArray<K>(minSize);
+        values = new DynamicArray<V>(minSize);
+    }
+
+    public DynamicMap(KeyValue<K, V>[] values) {
+        this.keys = new DynamicArray<>(values.length);
+        this.values = new DynamicArray<>(values.length);
+
+        for (KeyValue<K, V> value : values) {
+            this.keys.add(value.getKey());
+            this.values.add(value.getValue());
+        }
     }
 
     public void add(K key,
@@ -99,19 +113,19 @@ public class DynamicMap<K, V> {
         return values;
     }
 
-    public K[] getKeyArray() {
+    public Object[] getKeyArray() {
         return keys.toArray();
     }
 
-    public V[] getValueArray() {
+    public Object[] getValueArray() {
         return values.toArray();
     }
 
-    public ArrayList<K> getKeyArrayList() {
+    public ArrayList<Object> getKeyArrayList() {
         return keys.toArrayList();
     }
 
-    public ArrayList<V> getValueArrayList() {
+    public ArrayList<Object> getValueArrayList() {
         return values.toArrayList();
     }
 

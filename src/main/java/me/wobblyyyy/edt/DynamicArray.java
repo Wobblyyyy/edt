@@ -52,7 +52,7 @@ import java.util.List;
  * @param <E> the type of elements stored in the dynamic array.
  * @author Colin Robertson
  */
-public class DynamicArray<E> {
+public class DynamicArray<E> implements Arrayable<E> {
     /**
      * The default size of the dynamic array. We don't want to make this too
      * big or too small. Going too big means we'll end up allocating more
@@ -119,6 +119,22 @@ public class DynamicArray<E> {
      */
     public DynamicArray(Object[] elements) {
         this.elements = elements;
+    }
+
+    /**
+     * Create a new {@code DynamicArray} instance without any data. Instead of
+     * data, we have a lovely integer, representing the minimum allocation
+     * size of the array. This allocation size can be used to boost performance.
+     * Allocating a larger size uses more memory but reduces CPU time when
+     * dealing with arrays of that size of slightly smaller.
+     *
+     * @param minSize the minimum size of the array. By default, this value is
+     *                10. Larger arrays can have sizes up to 10,000, 100,000,
+     *                or even 1,000,000 - it's entirely up to you.
+     */
+    public DynamicArray(int minSize) {
+        this.minSize = minSize;
+        this.elements = EMPTY;
     }
 
     /**
@@ -477,6 +493,7 @@ public class DynamicArray<E> {
      * @param index the index that should be set.
      * @param value the value to set to the given index.
      */
+    @Override
     public void set(int index,
                     E value) {
         final int increase = index > activeSize ? index - activeSize : 0;
@@ -500,6 +517,7 @@ public class DynamicArray<E> {
      * the array's bounds, we don't do anything - an exception is thrown
      * anyways, so we don't need to return anything.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public E get(int index) {
         checkIndex(index);
@@ -555,6 +573,7 @@ public class DynamicArray<E> {
      * queried element. If the queried element is not contained within the
      * given range, return -1.
      */
+    @Override
     public int indexOf(E query) {
         return indexOfInRange(query, 0, activeSize);
     }
@@ -604,6 +623,7 @@ public class DynamicArray<E> {
      *
      * @return whether or not the {@code DynamicArray} is entirely empty.
      */
+    @Override
     public boolean isEmpty() {
         return size() == 0;
     }
@@ -618,6 +638,7 @@ public class DynamicArray<E> {
      * @return true if the queried element is found inside of the
      * {@code DynamicArray} at some point, false if it isn't.
      */
+    @Override
     public boolean contains(E query) {
         return indexOf(query) >= 0;
     }
@@ -701,7 +722,8 @@ public class DynamicArray<E> {
      * @see DynamicArray#toArray()
      * @see DynamicArray#toArrayList()
      */
-    public List<E> toList() {
+    @Override
+    public List<Object> toList() {
         return Arrays.asList(toArray());
     }
 
@@ -717,8 +739,9 @@ public class DynamicArray<E> {
      * @see DynamicArray#toArray()
      * @see DynamicArray#toList()
      */
-    public ArrayList<E> toArrayList() {
-        return new ArrayList<E>(Arrays.asList(toArray()));
+    @Override
+    public ArrayList<Object> toArrayList() {
+        return new ArrayList<>(Arrays.asList(toArray()));
     }
 
     /**
@@ -726,6 +749,7 @@ public class DynamicArray<E> {
      *
      * @return the size of the active portion of the element array.
      */
+    @Override
     public int size() {
         return activeSize;
     }
@@ -762,8 +786,64 @@ public class DynamicArray<E> {
      * @see DynamicArray#toArrayList()
      * @see DynamicArray#toList()
      */
+    @Override
+    public Object[] toArray() {
+        return Arrays.copyOf(elements, activeSize);
+    }
+
+    /**
+     * Get the array of objects contained in the {@code DynamicArray} and cast
+     * them into a given array. Please note: number types CAN NOT be cast here.
+     * In order to get an array of numbers, you need to use the methods linked
+     * in the {@code see} tags of this method.
+     *
+     * @param base the base array - this array will be over-written by a copied
+     *             array, originating from the internal array.
+     * @return the internally-stored array of elements, cast into a given
+     * array of the type {@code E}.
+     */
+    @Override
     @SuppressWarnings("unchecked")
-    public E[] toArray() {
-        return (E[]) Arrays.copyOf(elements, activeSize);
+    public E[] toArray(E[] base) {
+        base = (E[]) toArray();
+        return base;
+    }
+
+    /**
+     * Get the {@code DynamicArray}'s internal array and cast it into a
+     * number array. This method is rather expensive, as it has to manually
+     * unbox each of the objects contained inside of the array.
+     *
+     * @return a pre-casted array of double elements.
+     */
+    @Override
+    public Double[] toDoubleArray() {
+        Object[] objects = toArray();
+        Double[] doubles = new Double[objects.length];
+
+        for (int i = 0; i < objects.length; i++) {
+            doubles[i] = Double.parseDouble(objects[i].toString());
+        }
+
+        return doubles;
+    }
+
+    /**
+     * Get the {@code DynamicArray}'s internal array and cast it into a
+     * number array. This method is rather expensive, as it has to manually
+     * unbox each of the objects contained inside of the array.
+     *
+     * @return a pre-casted array of integer elements.
+     */
+    @Override
+    public Integer[] toIntegerArray() {
+        Object[] objects = toArray();
+        Integer[] integers = new Integer[objects.length];
+
+        for (int i = 0; i < objects.length; i++) {
+            integers[i] = Integer.parseInt(objects[i].toString());
+        }
+
+        return integers;
     }
 }
