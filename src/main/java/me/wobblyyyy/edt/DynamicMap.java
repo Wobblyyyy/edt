@@ -15,8 +15,8 @@ public class DynamicMap<K, V> {
     private DynamicArray<V> values;
 
     public DynamicMap() {
-        keys = new DynamicArray<K>(1000, new Object[0]);
-        values = new DynamicArray<V>(1000, new Object[0]);
+        keys = new DynamicArray<K>(10, new Object[0]);
+        values = new DynamicArray<V>(10, new Object[0]);
     }
 
     public void add(K key,

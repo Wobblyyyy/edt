@@ -8,7 +8,7 @@ public class MapTester {
     private void runTestA() {
         HashMap<String, Double> map = new HashMap<>();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10000000; i++) {
             map.put(
                     "Key! " + i,
                     i * Math.PI
@@ -19,7 +19,7 @@ public class MapTester {
     private void runTestB() {
         DynamicMap<String, Double> map = new DynamicMap<>();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10000000; i++) {
             map.add(
                     "Key! " + i,
                     i * Math.PI
@@ -36,6 +36,17 @@ public class MapTester {
         long bB = System.nanoTime();
         runTestB();
         long bA = System.nanoTime();
+
+        System.out.println("Test A time: " + (aA - aB));
+        System.out.println("Test B time: " + (bA - bB));
+
+        aB = System.nanoTime();
+        runTestA();
+        aA = System.nanoTime();
+
+        bB = System.nanoTime();
+        runTestB();
+        bA = System.nanoTime();
 
         System.out.println("Test A time: " + (aA - aB));
         System.out.println("Test B time: " + (bA - bB));
