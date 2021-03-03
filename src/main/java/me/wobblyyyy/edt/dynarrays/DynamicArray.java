@@ -30,6 +30,25 @@ import java.util.List;
  * still outperform the {@code ArrayList}.
  * </p>
  *
+ * <p>
+ * Performance tests against an {@code ArrayList} reveal the following:
+ * <ul>
+ *     <li>
+ *         {@code DynamicArray} time: 1.456149E8
+ *     </li>
+ *     <li>
+ *         {@code ArrayList} time: 1.628252E8
+ *     </li>
+ *     <li>
+ *         Delta: {@code DynamicArray} is faster, by about 10%.
+ *     </li>
+ * </ul>
+ * This test was run by creating an empty {@code DynamicArray} and an empty
+ * {@code ArrayList} and forcing them to add 1000, 2000, and then 3000 objects
+ * to their arrays. Each array storage method had to dynamically allocate
+ * memory while adding these elements.
+ * </p>
+ *
  * @param <E> the type of elements stored in the dynamic array.
  * @author Colin Robertson
  */
@@ -99,6 +118,21 @@ public class DynamicArray<E> {
      *                 contents upon construction.
      */
     public DynamicArray(Object[] elements) {
+        this.elements = elements;
+    }
+
+    /**
+     * Create a new {@code DynamicArray} instance using a plain array of
+     * elements as the initialization elements. These elements can be updated
+     * later with the methods provided in the {@link DynamicArray} class.
+     *
+     * @param elements an array, containing all of the {@link Object} instances
+     *                 that should be set as the {@code DynamicArray}'s
+     *                 contents upon construction.
+     */
+    public DynamicArray(int minSize,
+                        Object[] elements) {
+        this.minSize = minSize;
         this.elements = elements;
     }
 
