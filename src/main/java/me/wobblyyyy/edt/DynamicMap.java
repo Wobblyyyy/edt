@@ -98,8 +98,8 @@ public class DynamicMap<K, V> {
      *                this value is 10.
      */
     public DynamicMap(int minSize) {
-        keys = new DynamicArray<K>(minSize);
-        values = new DynamicArray<V>(minSize);
+        keys = new DynamicArray<>(minSize);
+        values = new DynamicArray<>(minSize);
     }
 
     /**
