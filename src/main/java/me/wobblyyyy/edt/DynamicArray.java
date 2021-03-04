@@ -116,6 +116,13 @@ public class DynamicArray<E> implements Arrayable<E> {
     private static final Object[] EMPTY = new Object[DEFAULT_SIZE];
 
     /**
+     * The internally-used iterator. This iterator is instanced upon the
+     * creation of the {@code DynamicArray} and can not be interacted with,
+     * aside from getting it, using the {@link DynamicArray#itr()} method.
+     */
+    private final Itr _itr_internal_ = new Itr();
+
+    /**
      * The size of the currently-active portion of the array. Because this
      * {@code DynamicArray} class doesn't grow and shrink the array whenever
      * elements are added or removed in order to conserve processing power,
@@ -948,6 +955,29 @@ public class DynamicArray<E> implements Arrayable<E> {
     }
 
     /**
+     * Get the {@code DynamicArray}'s iterator nested class. The iterator class
+     * provides iteration functionality for the {@code DynamicArray} data
+     * structure. Documentation on the iterator class's functionality is
+     * available in the iterator class itself - take a look at the "see" tags
+     * on this JavaDoc if you're confused.
+     *
+     * @return this {@code DynamicArray}'s iterator nested class. This class
+     * is generated at the {@code DynamicArray}'s construction and does not
+     * need to be maintained or interacted with other than to iterate over
+     * the array of elements.
+     * @see Itr
+     * @see Itr#previous()
+     * @see Itr#element()
+     * @see Itr#next()
+     * @see Itr#forEach(Runnable)
+     * @see Itr#forEach(Consumer)
+     */
+    @Override
+    public ItrSingle<E> itr() {
+        return _itr_internal_;
+    }
+
+    /**
      * A nested sub-class of the {@code DynamicArray} type that allows for
      * iteration over the array's contents.
      *
@@ -965,13 +995,6 @@ public class DynamicArray<E> implements Arrayable<E> {
      */
     private class Itr implements ItrSingle<E> {
         /**
-         * The current index of the iterator. This is used internally (by
-         * the iterator only) to get the current, previous, and next elements
-         * and indexes.
-         */
-        protected int index = 0;
-
-        /**
          * Default exception consumer. Exceptions are passed to this consumer,
          * which will print the stack trace of the exception. Exceptions can
          * be ignored by the end-user by using try/catch blocks - we assume
@@ -979,6 +1002,12 @@ public class DynamicArray<E> implements Arrayable<E> {
          */
         private final Consumer<Exception> exceptionConsumer =
                 Throwable::printStackTrace;
+        /**
+         * The current index of the iterator. This is used internally (by
+         * the iterator only) to get the current, previous, and next elements
+         * and indexes.
+         */
+        protected int index = 0;
 
         /**
          * {@inheritDoc}
@@ -1083,35 +1112,5 @@ public class DynamicArray<E> implements Arrayable<E> {
         public void forEach(Runnable runnable) {
             forEach(runnable, 0, activeSize - 1);
         }
-    }
-
-    /**
-     * The internally-used iterator. This iterator is instanced upon the
-     * creation of the {@code DynamicArray} and can not be interacted with,
-     * aside from getting it, using the {@link DynamicArray#itr()} method.
-     */
-    private final Itr _itr_internal_ = new Itr();
-
-    /**
-     * Get the {@code DynamicArray}'s iterator nested class. The iterator class
-     * provides iteration functionality for the {@code DynamicArray} data
-     * structure. Documentation on the iterator class's functionality is
-     * available in the iterator class itself - take a look at the "see" tags
-     * on this JavaDoc if you're confused.
-     *
-     * @return this {@code DynamicArray}'s iterator nested class. This class
-     * is generated at the {@code DynamicArray}'s construction and does not
-     * need to be maintained or interacted with other than to iterate over
-     * the array of elements.
-     * @see Itr
-     * @see Itr#previous()
-     * @see Itr#element()
-     * @see Itr#next()
-     * @see Itr#forEach(Runnable)
-     * @see Itr#forEach(Consumer)
-     */
-    @Override
-    public ItrSingle<E> itr() {
-        return _itr_internal_;
     }
 }

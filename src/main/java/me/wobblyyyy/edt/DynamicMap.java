@@ -73,6 +73,14 @@ public class DynamicMap<K, V> {
     private final DynamicArray<V> values;
 
     /**
+     * The internally-stored iterator instance. This is prefixed and suffixed
+     * by underscores so it would be very difficult for an end user to
+     * accidentally attempt to reference this. They should instead use the
+     * {@link DynamicMap#itr()} method/getter to get it.
+     */
+    private final Itr _itr_internal_ = new Itr();
+
+    /**
      * Create a new {@code DynamicMap} without any elements. Because the map
      * has no elements, you'll need to add some later.
      *
@@ -747,17 +755,23 @@ public class DynamicMap<K, V> {
     }
 
     /**
+     * Get the {@code DynamicMap}'s iteration system. For more information
+     * regarding how the map's iterator works, check out the JavaDocs linked
+     * in the "see" tags here.
+     *
+     * @return the {@code DynamicMap}'s internal iterator.
+     * @see Itr
+     * @see ItrPair
+     */
+    public ItrPair<K, V> itr() {
+        return _itr_internal_;
+    }
+
+    /**
      * Internal iteration instance. Used for... well, iteration. You guessed
      * it. I know it's crazy, but yeah.
      */
     private class Itr implements ItrPair<K, V> {
-        /**
-         * The current index of the iterator. This is used internally (by
-         * the iterator only) to get the current, previous, and next elements
-         * and indexes.
-         */
-        private int index = 0;
-
         /**
          * Default exception consumer. Exceptions are passed to this consumer,
          * which will print the stack trace of the exception. Exceptions can
@@ -766,6 +780,12 @@ public class DynamicMap<K, V> {
          */
         private final Consumer<Exception> exceptionConsumer =
                 Throwable::printStackTrace;
+        /**
+         * The current index of the iterator. This is used internally (by
+         * the iterator only) to get the current, previous, and next elements
+         * and indexes.
+         */
+        private int index = 0;
 
         /**
          * Get the previous element of the {@code DynamicArray}.
@@ -1219,20 +1239,5 @@ public class DynamicMap<K, V> {
         public void forEach(BiConsumer<K, V> keyValueConsumer) {
             forEach(keyValueConsumer, 0, values.size() - 1);
         }
-    }
-
-    private final Itr _itr_internal_ = new Itr();
-
-    /**
-     * Get the {@code DynamicMap}'s iteration system. For more information
-     * regarding how the map's iterator works, check out the JavaDocs linked
-     * in the "see" tags here.
-     *
-     * @return the {@code DynamicMap}'s internal iterator.
-     * @see Itr
-     * @see ItrPair
-     */
-    public ItrPair<K, V> itr() {
-        return _itr_internal_;
     }
 }

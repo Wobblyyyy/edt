@@ -3,6 +3,14 @@ package me.wobblyyyy.edt;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+/**
+ * An interface to be shared by iteration sets that can accept more than a
+ * single parameter per each iteration.
+ *
+ * @param <A> the A type. Usually "key".
+ * @param <B> the B type. Usually "value".
+ * @author Colin Robertson
+ */
 public interface ItrPair<A, B> {
     /**
      * Get the previous element of the {@code DynamicArray}.
