@@ -479,6 +479,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * small to remove another element from, nothing happens and this method
      * simply... well... doesn't do anything. Yeah. That's all.
      * </p>
+     *
      * @see DynamicArray#remove(int)
      * @see DynamicArray#remove(int[])
      * @see DynamicArray#removeAfter(int)
@@ -962,7 +963,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * @see Itr#forEach(Runnable)
      * @see Itr#forEach(Consumer)
      */
-    public class Itr {
+    private class Itr implements ItrSingle<E> {
         /**
          * The current index of the iterator. This is used internally (by
          * the iterator only) to get the current, previous, and next elements
@@ -980,15 +981,9 @@ public class DynamicArray<E> implements Arrayable<E> {
                 Throwable::printStackTrace;
 
         /**
-         * Get the previous element of the {@code DynamicArray}.
-         *
-         * @return the previous element of the {@code DynamicArray}. If there
-         * is no previous element, meaning that the element that was just
-         * used was the first element in the array, an array out of bounds
-         * exception is thrown. By default, this is handled by the iterators
-         * internal exception handler. To silence these exceptions, you can
-         * surround your code in try/catch blocks.
+         * {@inheritDoc}
          */
+        @Override
         public E previous() {
             checkIndex(index - 1);
 
@@ -996,25 +991,17 @@ public class DynamicArray<E> implements Arrayable<E> {
         }
 
         /**
-         * Get the current element of the {@code DynamicArray}'s array.
-         *
-         * @return the array's current element. This method won't ever throw
-         * any exceptions, unlike {@link Itr#previous()} and {@link Itr#next()}.
+         * {@inheritDoc}
          */
+        @Override
         public E element() {
             return get(index);
         }
 
         /**
-         * Get the next element in the {@code DynamicArray}'s data set.
-         *
-         * @return the {@code DynamicArray}'s next element. If there is no
-         * next element, meaning we've reached the end of the data set, an
-         * {@link ArrayIndexOutOfBoundsException} is thrown, indicating that
-         * the requested index could not be found. This exception can be
-         * handled by try/catch code if you'd like to silence the exception.
-         * Otherwise, the exception's stack trace will be printed.
+         * {@inheritDoc}
          */
+        @Override
         public E next() {
             checkIndex(index + 1);
 
@@ -1022,15 +1009,9 @@ public class DynamicArray<E> implements Arrayable<E> {
         }
 
         /**
-         * Get the previous index.
-         *
-         * <p>
-         * If this index is out of bounds, an exception is thrown. This
-         * exception can be handled by try/catch code if you so desire.
-         * </p>
-         *
-         * @return previous index, or current index minus one.
+         * {@inheritDoc}
          */
+        @Override
         public int previousIndex() {
             checkIndex(index - 1);
 
@@ -1038,24 +1019,17 @@ public class DynamicArray<E> implements Arrayable<E> {
         }
 
         /**
-         * Get the current index of the array.
-         *
-         * @return the array iterator's current index.
+         * {@inheritDoc}
          */
+        @Override
         public int index() {
             return index;
         }
 
         /**
-         * Get the iterator's next index.
-         *
-         * <p>
-         * If this index is out of bounds, an exception is thrown. This
-         * exception can be handled by try/catch code if you so desire.
-         * </p>
-         *
-         * @return next index, or current index plus one.
+         * {@inheritDoc}
          */
+        @Override
         public int nextIndex() {
             checkIndex(index + 1);
 
@@ -1063,60 +1037,9 @@ public class DynamicArray<E> implements Arrayable<E> {
         }
 
         /**
-         * Iterate over the {@code DynamicArray}'s data set. Any potential
-         * exceptions that occur during the loop's executions are handled
-         * by the {@code Itr} class' default exception handler, which will
-         * print the exception's stack trace.
-         *
-         * <p>
-         * For-each iteration isn't very expensive. As long as the array is
-         * not too large, running a for loop over each of the dynamic array's
-         * elements doesn't take very long at all.
-         * </p>
-         *
-         * <p>
-         * As the for loop goes through its iteration and execution, the
-         * index and current element will be updated. In addition to these
-         * values being updated, the {@code previous()} and {@code next()}
-         * methods will have their values changed. During loop execution, your
-         * consumer can access information about the array it's iterating over,
-         * such as previous, current, next elements and indexes.
-         * <ul>
-         *     <li>
-         *         Get next element: {@link Itr#next()}.
-         *     </li>
-         *     <li>
-         *         Get previous element: {@link Itr#previous()}.
-         *     </li>
-         *     <li>
-         *         Get current element: {@link Itr#element()}. Please note:
-         *         it's advised that you make use of the consumerized methods
-         *         provided by the iterator class to take advantage of the
-         *         consumer framework in Java.
-         *     </li>
-         *     <li>
-         *         Get next index: {@link Itr#nextIndex()}
-         *     </li>
-         *     <li>
-         *         Get previous index: {@link Itr#previousIndex()}
-         *     </li>
-         *     <li>
-         *         Get current index: {@link Itr#index()}
-         *     </li>
-         * </ul>
-         * </p>
-         *
-         * @param consumer the consumer that will consume the current element
-         *                 of iteration. This element is updated every
-         *                 iteration. Each element comes from the dynamic
-         *                 array's ordered set of elements.
-         * @param min      the minimum value that the for each loop should
-         *                 iterate over. Anything below this index value will
-         *                 be ignored by the loop.
-         * @param max      the maximum value that the for each loop should
-         *                 iterate over. Anything above this index value will
-         *                 be ignored by the loop.
+         * {@inheritDoc}
          */
+        @Override
         public void forEach(Consumer<E> consumer,
                             int min,
                             int max) {
@@ -1134,121 +1057,17 @@ public class DynamicArray<E> implements Arrayable<E> {
         }
 
         /**
-         * Iterate over the {@code DynamicArray}'s data set. Any potential
-         * exceptions that occur during the loop's executions are handled
-         * by the {@code Itr} class' default exception handler, which will
-         * print the exception's stack trace.
-         *
-         * <p>
-         * For-each iteration isn't very expensive. As long as the array is
-         * not too large, running a for loop over each of the dynamic array's
-         * elements doesn't take very long at all.
-         * </p>
-         *
-         * <p>
-         * As the for loop goes through its iteration and execution, the
-         * index and current element will be updated. In addition to these
-         * values being updated, the {@code previous()} and {@code next()}
-         * methods will have their values changed. During loop execution, your
-         * consumer can access information about the array it's iterating over,
-         * such as previous, current, next elements and indexes.
-         * <ul>
-         *     <li>
-         *         Get next element: {@link Itr#next()}.
-         *     </li>
-         *     <li>
-         *         Get previous element: {@link Itr#previous()}.
-         *     </li>
-         *     <li>
-         *         Get current element: {@link Itr#element()}. Please note:
-         *         it's advised that you make use of the consumerized methods
-         *         provided by the iterator class to take advantage of the
-         *         consumer framework in Java.
-         *     </li>
-         *     <li>
-         *         Get next index: {@link Itr#nextIndex()}
-         *     </li>
-         *     <li>
-         *         Get previous index: {@link Itr#previousIndex()}
-         *     </li>
-         *     <li>
-         *         Get current index: {@link Itr#index()}
-         *     </li>
-         * </ul>
-         * </p>
-         *
-         * @param consumer the consumer that will consume the current element
-         *                 of iteration. This element is updated every
-         *                 iteration. Each element comes from the dynamic
-         *                 array's ordered set of elements.
-         * @see Itr#forEach(Consumer, int, int)
-         * @see Itr#forEach(Runnable)
-         * @see Itr#forEach(Runnable, int, int)
+         * {@inheritDoc}
          */
+        @Override
         public void forEach(Consumer<E> consumer) {
             forEach(consumer, 0, activeSize - 1);
         }
 
         /**
-         * Iterate over the {@code DynamicArray}'s data set. Any potential
-         * exceptions that occur during the loop's executions are handled
-         * by the {@code Itr} class' default exception handler, which will
-         * print the exception's stack trace.
-         *
-         * <p>
-         * For-each iteration isn't very expensive. As long as the array is
-         * not too large, running a for loop over each of the dynamic array's
-         * elements doesn't take very long at all.
-         * </p>
-         *
-         * <p>
-         * As the for loop goes through its iteration and execution, the
-         * index and current element will be updated. In addition to these
-         * values being updated, the {@code previous()} and {@code next()}
-         * methods will have their values changed. During loop execution, your
-         * consumer can access information about the array it's iterating over,
-         * such as previous, current, next elements and indexes.
-         * <ul>
-         *     <li>
-         *         Get next element: {@link Itr#next()}.
-         *     </li>
-         *     <li>
-         *         Get previous element: {@link Itr#previous()}.
-         *     </li>
-         *     <li>
-         *         Get current element: {@link Itr#element()}. Please note:
-         *         it's advised that you make use of the consumerized methods
-         *         provided by the iterator class to take advantage of the
-         *         consumer framework in Java.
-         *     </li>
-         *     <li>
-         *         Get next index: {@link Itr#nextIndex()}
-         *     </li>
-         *     <li>
-         *         Get previous index: {@link Itr#previousIndex()}
-         *     </li>
-         *     <li>
-         *         Get current index: {@link Itr#index()}
-         *     </li>
-         * </ul>
-         * </p>
-         *
-         * @param runnable the {@code Runnable} code that will be executed
-         *                 for each and every one of the requested range's
-         *                 values. If you're only planning on using the current
-         *                 element value, it is suggested that you make use of
-         *                 the {@code Consumer}-based for each loops provided
-         *                 in the iterator class. For more information on these
-         *                 consumer based loops, look at the see tags here.
-         * @param min      the minimum value that the for each loop should
-         *                 iterate over. Anything below this index value will
-         *                 be ignored by the loop.
-         * @param max      the maximum value that the for each loop should
-         *                 iterate over. Anything above this index value will
-         *                 be ignored by the loop.
-         * @see Itr#forEach(Consumer)
-         * @see Itr#forEach(Consumer, int, int)
+         * {@inheritDoc}
          */
+        @Override
         public void forEach(Runnable runnable,
                             int min,
                             int max) {
@@ -1258,59 +1077,9 @@ public class DynamicArray<E> implements Arrayable<E> {
         }
 
         /**
-         * Iterate over the {@code DynamicArray}'s data set. Any potential
-         * exceptions that occur during the loop's executions are handled
-         * by the {@code Itr} class' default exception handler, which will
-         * print the exception's stack trace.
-         *
-         * <p>
-         * For-each iteration isn't very expensive. As long as the array is
-         * not too large, running a for loop over each of the dynamic array's
-         * elements doesn't take very long at all.
-         * </p>
-         *
-         * <p>
-         * As the for loop goes through its iteration and execution, the
-         * index and current element will be updated. In addition to these
-         * values being updated, the {@code previous()} and {@code next()}
-         * methods will have their values changed. During loop execution, your
-         * consumer can access information about the array it's iterating over,
-         * such as previous, current, next elements and indexes.
-         * <ul>
-         *     <li>
-         *         Get next element: {@link Itr#next()}.
-         *     </li>
-         *     <li>
-         *         Get previous element: {@link Itr#previous()}.
-         *     </li>
-         *     <li>
-         *         Get current element: {@link Itr#element()}. Please note:
-         *         it's advised that you make use of the consumerized methods
-         *         provided by the iterator class to take advantage of the
-         *         consumer framework in Java.
-         *     </li>
-         *     <li>
-         *         Get next index: {@link Itr#nextIndex()}
-         *     </li>
-         *     <li>
-         *         Get previous index: {@link Itr#previousIndex()}
-         *     </li>
-         *     <li>
-         *         Get current index: {@link Itr#index()}
-         *     </li>
-         * </ul>
-         * </p>
-         *
-         * @param runnable the {@code Runnable} code that will be executed
-         *                 for each and every one of the requested range's
-         *                 values. If you're only planning on using the current
-         *                 element value, it is suggested that you make use of
-         *                 the {@code Consumer}-based for each loops provided
-         *                 in the iterator class. For more information on these
-         *                 consumer based loops, look at the see tags here.
-         * @see Itr#forEach(Consumer)
-         * @see Itr#forEach(Consumer, int, int)
+         * {@inheritDoc}
          */
+        @Override
         public void forEach(Runnable runnable) {
             forEach(runnable, 0, activeSize - 1);
         }
@@ -1341,7 +1110,8 @@ public class DynamicArray<E> implements Arrayable<E> {
      * @see Itr#forEach(Runnable)
      * @see Itr#forEach(Consumer)
      */
-    public Itr itr() {
+    @Override
+    public ItrSingle<E> itr() {
         return _itr_internal_;
     }
 }
