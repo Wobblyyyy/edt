@@ -673,7 +673,7 @@ public class DynamicMap<K, V> {
      * <p>
      * This "real" size represents the combined allocated length of both
      * of the internally-used arrays. Generally, you should use size - NOT
-     * real size, as this gives you a number you might not be expecting.
+     * real size, as this might not be the size you're expecting.
      * </p>
      *
      * @return the "real" size of the keys array plus the "real" size of
@@ -746,6 +746,10 @@ public class DynamicMap<K, V> {
         values.reset();
     }
 
+    /**
+     * Internal iteration instance. Used for... well, iteration. You guessed
+     * it. I know it's crazy, but yeah.
+     */
     private class Itr implements ItrPair<K, V> {
         /**
          * The current index of the iterator. This is used internally (by
@@ -953,7 +957,17 @@ public class DynamicMap<K, V> {
          */
         @Override
         public void forEach(Consumer<V> consumer, int min, int max) {
-            values.itr().forEach(consumer, min, max);
+            index = min;
+
+            while (index <= max) {
+                try {
+                    consumer.accept(value());
+                } catch (Exception e) {
+                    exceptionConsumer.accept(e);
+                }
+
+                index += 1;
+            }
         }
 
         /**
@@ -1010,7 +1024,7 @@ public class DynamicMap<K, V> {
          */
         @Override
         public void forEach(Consumer<V> consumer) {
-            values.itr().forEach(consumer);
+            forEach(consumer, 0, values.size() - 1);
         }
 
         /**
@@ -1075,7 +1089,17 @@ public class DynamicMap<K, V> {
          */
         @Override
         public void forEach(Runnable runnable, int min, int max) {
-            values.itr().forEach(runnable, min, max);
+            index = min;
+
+            while (index <= max) {
+                try {
+                    runnable.run();
+                } catch (Exception e) {
+                    exceptionConsumer.accept(e);
+                }
+
+                index += 1;
+            }
         }
 
         /**
@@ -1134,7 +1158,7 @@ public class DynamicMap<K, V> {
          */
         @Override
         public void forEach(Runnable runnable) {
-            values.itr().forEach(runnable);
+            forEach(runnable, 0, values.size() - 1);
         }
 
         /**

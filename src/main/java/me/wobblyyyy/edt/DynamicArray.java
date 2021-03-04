@@ -969,7 +969,7 @@ public class DynamicArray<E> implements Arrayable<E> {
          * the iterator only) to get the current, previous, and next elements
          * and indexes.
          */
-        private int index = 0;
+        protected int index = 0;
 
         /**
          * Default exception consumer. Exceptions are passed to this consumer,

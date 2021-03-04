@@ -6,11 +6,11 @@ import java.util.HashMap;
 
 public class MapTester {
     int itrTimes = 13000;
-    int times = 100;
-    int reps = 5;
+    int times = 1000;
+    int reps = 10;
 
     private void runTestA() {
-        HashMap<String, Double> map = new HashMap<>();
+        HashMap<String, Double> map = new HashMap<>(1000);
 
         for (int i = 0; i < times; i++) {
             map.put(
@@ -62,7 +62,7 @@ public class MapTester {
         long stopwatch;
 
         for (int i = 0; i < reps; i++) {
-            times = i * 100;
+//            times = i * 100;
 
             stopwatch = System.nanoTime();
             runTestA();
@@ -179,6 +179,17 @@ public class MapTester {
             System.out.println("Total: " + total[0]);
 
             System.out.println("");
+        });
+    }
+
+    @Test
+    public void styleTest() {
+        DynamicMap<String, Double> map = new DynamicMap<>();
+        map.add("test 1", 1.0);
+        map.add("test 2", 1.0);
+
+        map.itr().forEach(() -> {
+            System.out.println(map.itr().index());
         });
     }
 }
