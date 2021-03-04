@@ -84,6 +84,16 @@ public interface Arrayable<E> {
     boolean contains(E value);
 
     /**
+     * Check to see if the requested index is a valid part of the internal
+     * array used by the {@code Arrayable} element in question.
+     *
+     * @param index the index to check.
+     * @return true if the index is contained in the active size of the array.
+     * False if the index isn't contained in the active size of the array.
+     */
+    boolean checkIndex(int index);
+
+    /**
      * Convert this instance of an {@code array} into an instance of the
      * much more well-known {@code List}.
      *

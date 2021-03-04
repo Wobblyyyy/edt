@@ -51,7 +51,7 @@ import java.util.function.Consumer;
  * @param <V> the type used for value elements.
  * @author Colin Robertson
  */
-public class DynamicMap<K, V> {
+public class DynamicMap<K, V> implements Mappable<K, V> {
     /**
      * An internal registry of key values.
      *
@@ -302,6 +302,67 @@ public class DynamicMap<K, V> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Put a given pair into the map. If the map already contains an element
+     * with the same key as the key that was inputted, replace that key's
+     * value. If the map doesn't contain the given key and the map can be
+     * expanded to include it, insert the value into the map.
+     *
+     * <p>
+     * This method operates by attempting to determine the index of the
+     * requested key. If the index of that key is -1, the key isn't contained
+     * in the map - we now respond by adding the input key/value pair to the
+     * map's internal arrays. If the index of that requested key is anything
+     * above -1 (non-inclusive) then the key already is included in the map's
+     * set, and we can simply over-write that key's value.
+     * </p>
+     *
+     * @param key   the key that the value should go under.
+     * @param value the value the key should have.
+     */
+    @Override
+    public void put(K key,
+                    V value) {
+        int index = indexOfKey(key);
+
+        if (index >= 0) {
+            /*
+             * The element is already contained in the map.
+             */
+            values.set(index, value);
+        } else {
+            /*
+             * The element is not contained in the map.
+             */
+            add(key, value);
+        }
+    }
+
+    /**
+     * Put a given pair into the map. If the map already contains an element
+     * with the same key as the key that was inputted, replace that key's
+     * value. If the map doesn't contain the given key and the map can be
+     * expanded to include it, insert the value into the map.
+     *
+     * <p>
+     * This method operates by attempting to determine the index of the
+     * requested key. If the index of that key is -1, the key isn't contained
+     * in the map - we now respond by adding the input key/value pair to the
+     * map's internal arrays. If the index of that requested key is anything
+     * above -1 (non-inclusive) then the key already is included in the map's
+     * set, and we can simply over-write that key's value.
+     * </p>
+     *
+     * @param keyValuePair a pair of a key and a value that should be inserted
+     *                     into the map. This pair contains both a key and a
+     *                     value.
+     * @see Mappable#put(Object, Object)
+     */
+    @Override
+    public void put(KeyValue<K, V> keyValuePair) {
+        put(keyValuePair.getKey(), keyValuePair.getValue());
     }
 
     /**

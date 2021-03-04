@@ -40,16 +40,17 @@ public class StaticArray<E> implements Arrayable<E> {
     /**
      * Create a new static array.
      *
-     * @param array the array that the static array should use. This array
-     *              WILL NOT be copied. Remember, arrays are MUTABLE objects,
-     *              meaning that any reference to them returns the same object.
-     *              If you create a static array WITHOUT copying the array,
-     *              the array you passed to this constructor will be the
-     *              static array's array - modifying the array via the
-     *              methods in this class will modify that array as well.
+     * @param elements the array that the static array should use. This array
+     *                 WILL NOT be copied. Remember, arrays are MUTABLE objects,
+     *                 meaning that any reference to them returns the same object.
+     *                 If you create a static array WITHOUT copying the array,
+     *                 the array you passed to this constructor will be the
+     *                 static array's array - modifying the array via the
+     *                 methods in this class will modify that array as well.
      */
-    public StaticArray(E[] array) {
-        this.array = array;
+    @SafeVarargs
+    public StaticArray(E... elements) {
+        this.array = elements;
     }
 
     /**
@@ -149,6 +150,19 @@ public class StaticArray<E> implements Arrayable<E> {
     @Override
     public boolean contains(E value) {
         return indexOf(value) >= 0;
+    }
+
+    /**
+     * Check to see if the requested index is a valid part of the internal
+     * array used by the {@code Arrayable} element in question.
+     *
+     * @param index the index to check.
+     * @return true if the index is contained in the active size of the array.
+     * False if the index isn't contained in the active size of the array.
+     */
+    @Override
+    public boolean checkIndex(int index) {
+        return index >= 0 && index < size() - 1;
     }
 
     /**

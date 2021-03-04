@@ -145,4 +145,28 @@ public class DynamicArrayTest {
             System.out.println("String = " + s);
         });
     }
+
+    @SuppressWarnings("RedundantArrayCreation")
+    @Test
+    public void testConstruction() {
+        DynamicArray<String> a1 = new DynamicArray<>() {{
+            add("Test 1");
+            add("Test 2");
+            add("Test 3");
+        }};
+        DynamicArray<String> a2 = new DynamicArray<>(
+                "Test 1",
+                "Test 2",
+                "Test 3"
+        );
+        DynamicArray<String> a3 = new DynamicArray<>(new String[] {
+                "Test 1",
+                "Test 2",
+                "Test 3"
+        });
+
+        a1.itr().forEach((Consumer<String>) System.out::println);
+        a2.itr().forEach((Consumer<String>) System.out::println);
+        a3.itr().forEach((Consumer<String>) System.out::println);
+    }
 }

@@ -171,7 +171,8 @@ public class DynamicArray<E> implements Arrayable<E> {
      *                 that should be set as the {@code DynamicArray}'s
      *                 contents upon construction.
      */
-    public DynamicArray(Object[] elements) {
+    @SafeVarargs
+    public DynamicArray(E... elements) {
         this.elements = Arrays.copyOf(elements, elements.length);
         activeSize = elements.length;
     }
@@ -264,7 +265,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      *
      * @param index the index to check.
      */
-    protected void checkIndex(int index) {
+    public boolean checkIndex(int index) {
         if (index < 0) {
             throw new ArrayIndexOutOfBoundsException(getOobException(
                     true,
@@ -278,6 +279,8 @@ public class DynamicArray<E> implements Arrayable<E> {
                     elements.length
             ));
         }
+
+        return true;
     }
 
     /**
