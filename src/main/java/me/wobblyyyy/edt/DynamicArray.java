@@ -172,7 +172,8 @@ public class DynamicArray<E> implements Arrayable<E> {
      *                 contents upon construction.
      */
     public DynamicArray(Object[] elements) {
-        this.elements = elements;
+        this.elements = Arrays.copyOf(elements, elements.length);
+        activeSize = elements.length;
     }
 
     /**
@@ -204,6 +205,7 @@ public class DynamicArray<E> implements Arrayable<E> {
                         Object[] elements) {
         this.minSize = minSize;
         this.elements = elements;
+        this.activeSize = elements.length;
     }
 
     /**
@@ -218,6 +220,20 @@ public class DynamicArray<E> implements Arrayable<E> {
      */
     public DynamicArray(ArrayList<E> elements) {
         this.elements = elements.toArray();
+        this.activeSize = elements.size();
+    }
+
+    /**
+     * Create a new {@code DynamicArray} instance by using an {@code Arrayable}
+     * object as the "base" that the dynamic array should be based on. This
+     * can be useful when converting a static array to a dynamic array.
+     *
+     * @param arrayable the array object that should be the base of the new
+     *                  dynamic array. Ex: {@link StaticArray} instance.
+     */
+    public DynamicArray(Arrayable<E> arrayable) {
+        this.elements = arrayable.toArray();
+        this.activeSize = arrayable.size();
     }
 
     /**
@@ -671,6 +687,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * range, however, return -1.
      * @see DynamicArray#indexOf(Object)
      */
+    @SuppressWarnings("DuplicatedCode")
     public int indexOfInRange(E query,
                               int min,
                               int max) {
