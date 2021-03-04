@@ -3,7 +3,6 @@ package me.wobblyyyy.edt;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * An implementation of the dynamic array concept commonly seen in computer
@@ -86,7 +85,7 @@ import java.util.function.Consumer;
  * <p>
  * In addition to providing methods for adding, deleting, removing, whatever -
  * whatever you want to call it - the {@code DynamicArray} class provides
- * iteration functionality by leveraging the nested {@link Itr} sub-class.
+ * iteration functionality by leveraging the {@link ArrayIterator} sub-class.
  * This class allows you to iterate over the entire data set quickly and
  * without having to worry about setting up a for loop or whatever other fear
  * you have. Look - I get it - for loops are incredibly scary and nobody really
@@ -120,7 +119,8 @@ public class DynamicArray<E> implements Arrayable<E> {
      * creation of the {@code DynamicArray} and can not be interacted with,
      * aside from getting it, using the {@link DynamicArray#itr()} method.
      */
-    private final Itr _itr_internal_ = new Itr();
+    private final ArrayIterator<E> _itr_internal_ =
+            new ArrayIterator<>(() -> this);
 
     /**
      * The size of the currently-active portion of the array. Because this
@@ -985,152 +985,9 @@ public class DynamicArray<E> implements Arrayable<E> {
      * is generated at the {@code DynamicArray}'s construction and does not
      * need to be maintained or interacted with other than to iterate over
      * the array of elements.
-     * @see Itr
-     * @see Itr#previous()
-     * @see Itr#element()
-     * @see Itr#next()
-     * @see Itr#forEach(Runnable)
-     * @see Itr#forEach(Consumer)
      */
     @Override
     public ItrSingle<E> itr() {
         return _itr_internal_;
-    }
-
-    /**
-     * A nested sub-class of the {@code DynamicArray} type that allows for
-     * iteration over the array's contents.
-     *
-     * <p>
-     * The iterator class seeks to provide iteration functionality, allowing
-     * users to quickly and effectively iterate over the entirety of the
-     * dynamic array's contents.
-     * </p>
-     *
-     * @see Itr#previous()
-     * @see Itr#element()
-     * @see Itr#next()
-     * @see Itr#forEach(Runnable)
-     * @see Itr#forEach(Consumer)
-     */
-    private class Itr implements ItrSingle<E> {
-        /**
-         * Default exception consumer. Exceptions are passed to this consumer,
-         * which will print the stack trace of the exception. Exceptions can
-         * be ignored by the end-user by using try/catch blocks - we assume
-         * that the user wants to see the exception here.
-         */
-        private final Consumer<Exception> exceptionConsumer =
-                Throwable::printStackTrace;
-        /**
-         * The current index of the iterator. This is used internally (by
-         * the iterator only) to get the current, previous, and next elements
-         * and indexes.
-         */
-        protected int index = 0;
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public E previous() {
-            checkIndex(index - 1);
-
-            return get(index - 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public E element() {
-            return get(index);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public E next() {
-            checkIndex(index + 1);
-
-            return get(index + 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int previousIndex() {
-            checkIndex(index - 1);
-
-            return index - 1;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int index() {
-            return index;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int nextIndex() {
-            checkIndex(index + 1);
-
-            return index + 1;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Consumer<E> consumer,
-                            int min,
-                            int max) {
-            index = min;
-
-            while (index <= max) {
-                try {
-                    consumer.accept(element());
-                } catch (Exception e) {
-                    exceptionConsumer.accept(e);
-                }
-
-                index += 1;
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Consumer<E> consumer) {
-            forEach(consumer, 0, activeSize - 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Runnable runnable,
-                            int min,
-                            int max) {
-            Consumer<E> consumerized = e -> runnable.run();
-
-            forEach(consumerized, min, max);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Runnable runnable) {
-            forEach(runnable, 0, activeSize - 1);
-        }
     }
 }

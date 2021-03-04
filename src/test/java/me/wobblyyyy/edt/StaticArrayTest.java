@@ -14,6 +14,7 @@ public class StaticArrayTest {
         });
     }
 
+    @SuppressWarnings("RedundantArrayCreation")
     @Test
     public void fromDynamicArray() {
         DynamicArray<String> dynamic = new DynamicArray<>(new String[] {
@@ -24,8 +25,6 @@ public class StaticArrayTest {
         StaticArray<String> staticArray = new StaticArray<>(dynamic);
         DynamicArray<String> normal = new DynamicArray<>(staticArray);
 
-        normal.itr().forEach(v -> {
-            System.out.println("Value: " + v);
-        });
+        normal.itr().forEach(v -> System.out.println("Value: " + v));
     }
 }

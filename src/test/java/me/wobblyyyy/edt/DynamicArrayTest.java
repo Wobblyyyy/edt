@@ -146,6 +146,22 @@ public class DynamicArrayTest {
         });
     }
 
+    @Test
+    public void testIterationSpeed() {
+        DynamicArray<String> cool = new DynamicArray<>(1000);
+        DynamicArray<String> array = new DynamicArray<>(100);
+
+        for (int i = 0; i <= 100; i++) {
+            array.add("String " + i);
+        }
+
+        long stopwatch = System.nanoTime();
+        array.itr().forEach(cool::add);
+        stopwatch = System.nanoTime() - stopwatch;
+
+        System.out.println("Time: " + (stopwatch / 10000));
+    }
+
     @SuppressWarnings("RedundantArrayCreation")
     @Test
     public void testConstruction() {

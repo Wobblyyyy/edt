@@ -3,7 +3,6 @@ package me.wobblyyyy.edt;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * A non-resizable and static array. You can't add or remove elements from
@@ -267,121 +266,6 @@ public class StaticArray<E> implements Arrayable<E> {
      *
      * @see StaticArray#itr()
      */
-    private final Itr _itr_internal_ = new Itr();
-
-    /**
-     * Internal iterator class! Who doesn't love iteration!
-     */
-    private class Itr implements ItrSingle<E> {
-        /**
-         * Default exception consumer. Exceptions are passed to this consumer,
-         * which will print the stack trace of the exception. Exceptions can
-         * be ignored by the end-user by using try/catch blocks - we assume
-         * that the user wants to see the exception here.
-         */
-        private final Consumer<Exception> exceptionConsumer =
-                Throwable::printStackTrace;
-        /**
-         * The current index of the iterator. This is used internally (by
-         * the iterator only) to get the current, previous, and next elements
-         * and indexes.
-         */
-        protected int index = 0;
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public E previous() {
-            return get(index - 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public E element() {
-            return get(index);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public E next() {
-            return get(index + 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int previousIndex() {
-            return index - 1;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int index() {
-            return index;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int nextIndex() {
-            return index + 1;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Consumer<E> consumer,
-                            int min,
-                            int max) {
-            index = min;
-
-            while (index <= max) {
-                try {
-                    consumer.accept(element());
-                } catch (Exception e) {
-                    exceptionConsumer.accept(e);
-                }
-
-                index += 1;
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Consumer<E> consumer) {
-            forEach(consumer, 0, size() - 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Runnable runnable,
-                            int min,
-                            int max) {
-            Consumer<E> consumerized = e -> runnable.run();
-
-            forEach(consumerized, min, max);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Runnable runnable) {
-            forEach(runnable, 0, size() - 1);
-        }
-    }
+    private final ArrayIterator<E> _itr_internal_ =
+            new ArrayIterator<>(() -> this);
 }
