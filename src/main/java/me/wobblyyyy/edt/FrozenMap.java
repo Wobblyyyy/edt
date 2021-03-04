@@ -334,7 +334,7 @@ public class FrozenMap<K, V> implements Mappable<K, V> {
      */
     @Override
     public ItrPair<K, V> itr() {
-        return null;
+        return _itr_internal_;
     }
 
     /**
