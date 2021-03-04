@@ -1,8 +1,5 @@
 package me.wobblyyyy.edt;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 /**
  * An implementation of the {@code Mappable} interface designed exclusively
  * for applications in which the contents of the map won't ever be updated.
@@ -35,7 +32,11 @@ public class FrozenMap<K, V> implements Mappable<K, V> {
      */
     private final StaticArray<V> values;
 
-    private final Itr _itr_internal_ = new Itr();
+    /**
+     * Internal reference to iterator class.
+     */
+    private final MapIterator<K, V> _itr_internal_ =
+            new MapIterator<>(() -> this);
 
     /**
      * Create a new {@code FrozenMap} instance.
@@ -335,194 +336,5 @@ public class FrozenMap<K, V> implements Mappable<K, V> {
     @Override
     public ItrPair<K, V> itr() {
         return _itr_internal_;
-    }
-
-    /**
-     * Internal iteration instance. Used for... well, iteration. You guessed
-     * it. I know it's crazy, but yeah.
-     */
-    private class Itr implements ItrPair<K, V> {
-        /**
-         * Default exception consumer. Exceptions are passed to this consumer,
-         * which will print the stack trace of the exception. Exceptions can
-         * be ignored by the end-user by using try/catch blocks - we assume
-         * that the user wants to see the exception here.
-         */
-        private final Consumer<Exception> exceptionConsumer =
-                Throwable::printStackTrace;
-
-        /**
-         * The current index of the iterator. This is used internally (by
-         * the iterator only) to get the current, previous, and next elements
-         * and indexes.
-         */
-        private int index = 0;
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public V previous() {
-            values.checkIndex(index - 1);
-
-            return values.get(index - 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public V value() {
-            return values.get(index);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public V next() {
-            values.checkIndex(index + 1);
-
-            return values.get(index + 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public K previousKey() {
-            keys.checkIndex(index - 1);
-
-            return keys.get(index - 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public K key() {
-            return keys.get(index);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public K nextKey() {
-            keys.checkIndex(index + 1);
-
-            return keys.get(index + 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int previousIndex() {
-            values.checkIndex(index - 1);
-
-            return index - 1;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int index() {
-            return index;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int nextIndex() {
-            values.checkIndex(index + 1);
-
-            return index + 1;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Consumer<V> consumer, int min, int max) {
-            index = min;
-
-            while (index <= max) {
-                try {
-                    consumer.accept(value());
-                } catch (Exception e) {
-                    exceptionConsumer.accept(e);
-                }
-
-                index += 1;
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Consumer<V> consumer) {
-            forEach(consumer, 0, values.size() - 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Runnable runnable, int min, int max) {
-            index = min;
-
-            while (index <= max) {
-                try {
-                    runnable.run();
-                } catch (Exception e) {
-                    exceptionConsumer.accept(e);
-                }
-
-                index += 1;
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(Runnable runnable) {
-            forEach(runnable, 0, values.size() - 1);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(BiConsumer<K, V> keyValueConsumer,
-                            int min,
-                            int max) {
-            index = min;
-
-            while (index <= max) {
-                try {
-                    keyValueConsumer.accept(
-                            key(),
-                            value()
-                    );
-                } catch (Exception e) {
-                    exceptionConsumer.accept(e);
-                }
-
-                index += 1;
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void forEach(BiConsumer<K, V> keyValueConsumer) {
-            forEach(keyValueConsumer, 0, values.size() - 1);
-        }
     }
 }
