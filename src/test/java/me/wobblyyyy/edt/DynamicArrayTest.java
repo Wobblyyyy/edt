@@ -4,6 +4,7 @@ import me.wobblyyyy.edt.DynamicArray;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class DynamicArrayTest {
     @Test
@@ -108,5 +109,40 @@ public class DynamicArrayTest {
 
         Double[] realArray = array.toDoubleArray();
         System.out.println(Arrays.toString(realArray));
+    }
+
+    @Test
+    public void testIteration() {
+        DynamicArray<String> array = new DynamicArray<>(10);
+
+        for (int i = 0; i <= 10; i++) {
+            array.add("Very cool string! " + i);
+        }
+
+        array.itr().forEach(() -> {
+            System.out.println(
+                    "Reading string! On index: " + array.itr().index()
+            );
+
+            System.out.println(
+                    "Current element: " + array.itr().element().toString()
+            );
+
+            try {
+                System.out.println(
+                        "Next element: " + array.itr().next().toString()
+                );
+            } catch (Exception ignored) {
+
+            }
+        });
+
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+
+        array.itr().forEach(s -> {
+            System.out.println("String = " + s);
+        });
     }
 }

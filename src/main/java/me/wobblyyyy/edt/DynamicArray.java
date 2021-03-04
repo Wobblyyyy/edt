@@ -3,6 +3,7 @@ package me.wobblyyyy.edt;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * An implementation of the dynamic array concept commonly seen in computer
@@ -15,6 +16,28 @@ import java.util.List;
  * shrunk, etc - whatever you'd like. Regular {@code Array} instances in Java
  * function fairly well already - they can store things and do tons of cool
  * stuff, y'know?
+ * </p>
+ *
+ * <p>
+ * Other iterations and implementations of dynamic array concepts, such as
+ * the {@link java.util.Vector} class (which comes stock with the JDK) or even
+ * the {@link ArrayList} class (which also comes stock with the JDK) are
+ * already very effective. The {@code DynamicArray} class attempts to
+ * distinguish itself from other implementations of this concept by nearly
+ * quadrupling performance (in some cases) of large arrays by more liberally
+ * allocating memory to array elements. This will use a lot more memory than
+ * either of the two aforementioned data structures, however, performance is
+ * increased - ESPECIALLY on larger arrays. For more information regarding
+ * how performance is increased and the specific gains of performance,
+ * keep reading! You know you want to.
+ * </p>
+ *
+ * <p>
+ * At first glance, it would appear that the {@code DynamicArray} class is
+ * essentially the {@link java.util.Vector} class, which is already provided
+ * stock by Java. This is somewhat true - both are re-sizable/dynamic arrays.
+ * However, the {@code DynamicArray} class is better optimized for dealing
+ * with large sets of data.
  * </p>
  *
  * <p>
@@ -49,6 +72,29 @@ import java.util.List;
  * memory while adding these elements.
  * </p>
  *
+ * <p>
+ * The {@code DynamicArray} class is an effective replacement for the
+ * {@code ArrayList} class in many instances. Instances where using a dynamic
+ * array instead of an array list wouldn't be appropriate are limited, for the
+ * most part, to situations in which another method requires an array list
+ * as a parameter, rather than an array list. This issue can largely be
+ * circumvented by using the {@link DynamicArray#toArrayList()} method, which
+ * will provide the {@code DynamicArray} as an array list, instead of a much
+ * less adopted {@code DynamicArray} instance.
+ * </p>
+ *
+ * <p>
+ * In addition to providing methods for adding, deleting, removing, whatever -
+ * whatever you want to call it - the {@code DynamicArray} class provides
+ * iteration functionality by leveraging the nested {@link Itr} sub-class.
+ * This class allows you to iterate over the entire data set quickly and
+ * without having to worry about setting up a for loop or whatever other fear
+ * you have. Look - I get it - for loops are incredibly scary and nobody really
+ * knows how to use them. For more information regarding iterating over elements
+ * stored in the {@code DynamicArray}, take a look at the iterator class and
+ * the {@code JavaDoc} documentation provided there.
+ * </p>
+ *
  * @param <E> the type of elements stored in the dynamic array.
  * @author Colin Robertson
  */
@@ -66,6 +112,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * created without any input values, the {@code DynamicArray} uses this
      * value as the element value.
      */
+    @SuppressWarnings("MismatchedReadAndWriteOfArray")
     private static final Object[] EMPTY = new Object[DEFAULT_SIZE];
 
     /**
@@ -194,7 +241,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      *
      * @param index the index to check.
      */
-    private void checkIndex(int index) {
+    protected void checkIndex(int index) {
         if (index < 0) {
             throw new ArrayIndexOutOfBoundsException(getOobException(
                     true,
@@ -359,6 +406,8 @@ public class DynamicArray<E> implements Arrayable<E> {
      *
      * @param values the values that should be appended to the
      *               {@code DynamicArray} instance's elements array.
+     * @see DynamicArray#add(int, Object)
+     * @see DynamicArray#add(Object)
      */
     public void add(E[] values) {
         expandArray(values.length);
@@ -376,6 +425,8 @@ public class DynamicArray<E> implements Arrayable<E> {
      *
      * @param value the value that should be appended to the end of the
      *              {@code DynamicArray}'s element array.
+     * @see DynamicArray#add(Object[])
+     * @see DynamicArray#add(int, Object)
      */
     public void add(E value) {
         expandArray(1);
@@ -398,6 +449,8 @@ public class DynamicArray<E> implements Arrayable<E> {
      *
      * @param index the target index for the specified value.
      * @param value the value to set to the index.
+     * @see DynamicArray#add(Object[])
+     * @see DynamicArray#add(Object)
      */
     public void add(int index,
                     E value) {
@@ -426,6 +479,9 @@ public class DynamicArray<E> implements Arrayable<E> {
      * small to remove another element from, nothing happens and this method
      * simply... well... doesn't do anything. Yeah. That's all.
      * </p>
+     * @see DynamicArray#remove(int)
+     * @see DynamicArray#remove(int[])
+     * @see DynamicArray#removeAfter(int)
      */
     public void remove() {
         if (activeSize - 1 > minSize) {
@@ -446,6 +502,9 @@ public class DynamicArray<E> implements Arrayable<E> {
      * </p>
      *
      * @param indices all the index targets to be removed.
+     * @see DynamicArray#remove()
+     * @see DynamicArray#remove(int)
+     * @see DynamicArray#removeAfter(int)
      */
     public void remove(int[] indices) {
         checkIndices(indices);
@@ -461,6 +520,9 @@ public class DynamicArray<E> implements Arrayable<E> {
      *
      * @param index the index that should have its corresponding value
      *              removed from existence.
+     * @see DynamicArray#remove()
+     * @see DynamicArray#remove(int[])
+     * @see DynamicArray#removeAfter(int)
      */
     public void remove(int index) {
         checkIndex(index);
@@ -474,6 +536,9 @@ public class DynamicArray<E> implements Arrayable<E> {
      *
      * @param cutoff the cutoff point. Any element after this point will be
      *               removed from the {@code DynamicArray}'s active area.
+     * @see DynamicArray#remove(int[])
+     * @see DynamicArray#remove()
+     * @see DynamicArray#remove(int)
      */
     public void removeAfter(int cutoff) {
         checkIndex(cutoff);
@@ -516,6 +581,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * @return the value that comes from the index. If the index is out of
      * the array's bounds, we don't do anything - an exception is thrown
      * anyways, so we don't need to return anything.
+     * @see DynamicArray#get(int[])
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -539,6 +605,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * @return an array of the same size as the size of the input index array.
      * If no values are found, or no values are added, an empty array is
      * returned - that is, assuming there weren't any exceptions.
+     * @see DynamicArray#get(int)
      */
     @SuppressWarnings("unchecked")
     public E[] get(int[] indices) {
@@ -572,6 +639,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * of (0) to (array max), return the index of the first instance of the
      * queried element. If the queried element is not contained within the
      * given range, return -1.
+     * @see DynamicArray#indexOfInRange(Object, int, int)
      */
     @Override
     public int indexOf(E query) {
@@ -593,6 +661,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * @return if the queried element is contained in the range, return the
      * index of that queried element. If the queried element is not in the
      * range, however, return -1.
+     * @see DynamicArray#indexOf(Object)
      */
     public int indexOfInRange(E query,
                               int min,
@@ -622,6 +691,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * the array being equal to zero.
      *
      * @return whether or not the {@code DynamicArray} is entirely empty.
+     * @see DynamicArray#size()
      */
     @Override
     public boolean isEmpty() {
@@ -634,9 +704,18 @@ public class DynamicArray<E> implements Arrayable<E> {
      * will return true. If no instances of the element are found, this method
      * will return false.
      *
+     * <p>
+     * This method works by attempting to find the index of the queried element.
+     * If the index is -1, we know the element isn't contained in the array,
+     * and we return false. If the index is 0 or above, however, we know that
+     * the element is contained somewhere in the array - thus, we return true.
+     * </p>
+     *
      * @param query the element to query.
      * @return true if the queried element is found inside of the
      * {@code DynamicArray} at some point, false if it isn't.
+     * @see DynamicArray#indexOf(Object)
+     * @see DynamicArray#isEmpty()
      */
     @Override
     public boolean contains(E query) {
@@ -652,6 +731,10 @@ public class DynamicArray<E> implements Arrayable<E> {
      * before. This method will, however, set all of the elements in the active
      * portion of the array to be equal to null.
      * </p>
+     *
+     * @see DynamicArray#clearAndTrim()
+     * @see DynamicArray#trim()
+     * @see DynamicArray#reset()
      */
     public void clear() {
         for (int i = 0; i < size(); i++) {
@@ -677,6 +760,10 @@ public class DynamicArray<E> implements Arrayable<E> {
      * In case it matters at all: The array will be cleared before it is
      * trimmed. This shouldn't impact much, but yeah. There you go.
      * </p>
+     *
+     * @see DynamicArray#clear()
+     * @see DynamicArray#trim()
+     * @see DynamicArray#reset()
      */
     public void clearAndTrim() {
         clear();
@@ -708,6 +795,10 @@ public class DynamicArray<E> implements Arrayable<E> {
      * reduce the memory footprint of the {@code DynamicArray} by trimming
      * any values that aren't actively being used by the array.
      * </p>
+     *
+     * @see DynamicArray#reset()
+     * @see DynamicArray#clear()
+     * @see DynamicArray#clearAndTrim()
      */
     public void trim() {
         elements = Arrays.copyOf(elements, activeSize);
@@ -748,6 +839,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * Get the size of the active portion of the element array.
      *
      * @return the size of the active portion of the element array.
+     * @see DynamicArray#activeSize
      */
     @Override
     public int size() {
@@ -761,6 +853,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * entire element array.
      *
      * @return the size of the entire element array.
+     * @see DynamicArray#activeSize
      */
     public int realSize() {
         return elements.length;
@@ -785,6 +878,8 @@ public class DynamicArray<E> implements Arrayable<E> {
      * as this method is intentionally immutable.
      * @see DynamicArray#toArrayList()
      * @see DynamicArray#toList()
+     * @see DynamicArray#toDoubleArray()
+     * @see DynamicArray#toIntegerArray()
      */
     @Override
     public Object[] toArray() {
@@ -801,6 +896,8 @@ public class DynamicArray<E> implements Arrayable<E> {
      *             array, originating from the internal array.
      * @return the internally-stored array of elements, cast into a given
      * array of the type {@code E}.
+     * @see DynamicArray#toDoubleArray()
+     * @see DynamicArray#toIntegerArray()
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -815,6 +912,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * unbox each of the objects contained inside of the array.
      *
      * @return a pre-casted array of double elements.
+     * @see DynamicArray#toIntegerArray()
      */
     @Override
     public Double[] toDoubleArray() {
@@ -834,6 +932,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * unbox each of the objects contained inside of the array.
      *
      * @return a pre-casted array of integer elements.
+     * @see DynamicArray#toDoubleArray()
      */
     @Override
     public Integer[] toIntegerArray() {
@@ -845,5 +944,404 @@ public class DynamicArray<E> implements Arrayable<E> {
         }
 
         return integers;
+    }
+
+    /**
+     * A nested sub-class of the {@code DynamicArray} type that allows for
+     * iteration over the array's contents.
+     *
+     * <p>
+     * The iterator class seeks to provide iteration functionality, allowing
+     * users to quickly and effectively iterate over the entirety of the
+     * dynamic array's contents.
+     * </p>
+     *
+     * @see Itr#previous()
+     * @see Itr#element()
+     * @see Itr#next()
+     * @see Itr#forEach(Runnable)
+     * @see Itr#forEach(Consumer)
+     */
+    public class Itr {
+        /**
+         * The current index of the iterator. This is used internally (by
+         * the iterator only) to get the current, previous, and next elements
+         * and indexes.
+         */
+        private int index = 0;
+
+        /**
+         * Default exception consumer. Exceptions are passed to this consumer,
+         * which will print the stack trace of the exception. Exceptions can
+         * be ignored by the end-user by using try/catch blocks - we assume
+         * that the user wants to see the exception here.
+         */
+        private final Consumer<Exception> exceptionConsumer =
+                Throwable::printStackTrace;
+
+        /**
+         * Get the previous element of the {@code DynamicArray}.
+         *
+         * @return the previous element of the {@code DynamicArray}. If there
+         * is no previous element, meaning that the element that was just
+         * used was the first element in the array, an array out of bounds
+         * exception is thrown. By default, this is handled by the iterators
+         * internal exception handler. To silence these exceptions, you can
+         * surround your code in try/catch blocks.
+         */
+        public E previous() {
+            checkIndex(index - 1);
+
+            return get(index - 1);
+        }
+
+        /**
+         * Get the current element of the {@code DynamicArray}'s array.
+         *
+         * @return the array's current element. This method won't ever throw
+         * any exceptions, unlike {@link Itr#previous()} and {@link Itr#next()}.
+         */
+        public E element() {
+            return get(index);
+        }
+
+        /**
+         * Get the next element in the {@code DynamicArray}'s data set.
+         *
+         * @return the {@code DynamicArray}'s next element. If there is no
+         * next element, meaning we've reached the end of the data set, an
+         * {@link ArrayIndexOutOfBoundsException} is thrown, indicating that
+         * the requested index could not be found. This exception can be
+         * handled by try/catch code if you'd like to silence the exception.
+         * Otherwise, the exception's stack trace will be printed.
+         */
+        public E next() {
+            checkIndex(index + 1);
+
+            return get(index + 1);
+        }
+
+        /**
+         * Get the previous index.
+         *
+         * <p>
+         * If this index is out of bounds, an exception is thrown. This
+         * exception can be handled by try/catch code if you so desire.
+         * </p>
+         *
+         * @return previous index, or current index minus one.
+         */
+        public int previousIndex() {
+            checkIndex(index - 1);
+
+            return index - 1;
+        }
+
+        /**
+         * Get the current index of the array.
+         *
+         * @return the array iterator's current index.
+         */
+        public int index() {
+            return index;
+        }
+
+        /**
+         * Get the iterator's next index.
+         *
+         * <p>
+         * If this index is out of bounds, an exception is thrown. This
+         * exception can be handled by try/catch code if you so desire.
+         * </p>
+         *
+         * @return next index, or current index plus one.
+         */
+        public int nextIndex() {
+            checkIndex(index + 1);
+
+            return index + 1;
+        }
+
+        /**
+         * Iterate over the {@code DynamicArray}'s data set. Any potential
+         * exceptions that occur during the loop's executions are handled
+         * by the {@code Itr} class' default exception handler, which will
+         * print the exception's stack trace.
+         *
+         * <p>
+         * For-each iteration isn't very expensive. As long as the array is
+         * not too large, running a for loop over each of the dynamic array's
+         * elements doesn't take very long at all.
+         * </p>
+         *
+         * <p>
+         * As the for loop goes through its iteration and execution, the
+         * index and current element will be updated. In addition to these
+         * values being updated, the {@code previous()} and {@code next()}
+         * methods will have their values changed. During loop execution, your
+         * consumer can access information about the array it's iterating over,
+         * such as previous, current, next elements and indexes.
+         * <ul>
+         *     <li>
+         *         Get next element: {@link Itr#next()}.
+         *     </li>
+         *     <li>
+         *         Get previous element: {@link Itr#previous()}.
+         *     </li>
+         *     <li>
+         *         Get current element: {@link Itr#element()}. Please note:
+         *         it's advised that you make use of the consumerized methods
+         *         provided by the iterator class to take advantage of the
+         *         consumer framework in Java.
+         *     </li>
+         *     <li>
+         *         Get next index: {@link Itr#nextIndex()}
+         *     </li>
+         *     <li>
+         *         Get previous index: {@link Itr#previousIndex()}
+         *     </li>
+         *     <li>
+         *         Get current index: {@link Itr#index()}
+         *     </li>
+         * </ul>
+         * </p>
+         *
+         * @param consumer the consumer that will consume the current element
+         *                 of iteration. This element is updated every
+         *                 iteration. Each element comes from the dynamic
+         *                 array's ordered set of elements.
+         * @param min      the minimum value that the for each loop should
+         *                 iterate over. Anything below this index value will
+         *                 be ignored by the loop.
+         * @param max      the maximum value that the for each loop should
+         *                 iterate over. Anything above this index value will
+         *                 be ignored by the loop.
+         */
+        public void forEach(Consumer<E> consumer,
+                            int min,
+                            int max) {
+            index = min;
+
+            while (index <= max) {
+                try {
+                    consumer.accept(element());
+                } catch (Exception e) {
+                    exceptionConsumer.accept(e);
+                }
+
+                index += 1;
+            }
+        }
+
+        /**
+         * Iterate over the {@code DynamicArray}'s data set. Any potential
+         * exceptions that occur during the loop's executions are handled
+         * by the {@code Itr} class' default exception handler, which will
+         * print the exception's stack trace.
+         *
+         * <p>
+         * For-each iteration isn't very expensive. As long as the array is
+         * not too large, running a for loop over each of the dynamic array's
+         * elements doesn't take very long at all.
+         * </p>
+         *
+         * <p>
+         * As the for loop goes through its iteration and execution, the
+         * index and current element will be updated. In addition to these
+         * values being updated, the {@code previous()} and {@code next()}
+         * methods will have their values changed. During loop execution, your
+         * consumer can access information about the array it's iterating over,
+         * such as previous, current, next elements and indexes.
+         * <ul>
+         *     <li>
+         *         Get next element: {@link Itr#next()}.
+         *     </li>
+         *     <li>
+         *         Get previous element: {@link Itr#previous()}.
+         *     </li>
+         *     <li>
+         *         Get current element: {@link Itr#element()}. Please note:
+         *         it's advised that you make use of the consumerized methods
+         *         provided by the iterator class to take advantage of the
+         *         consumer framework in Java.
+         *     </li>
+         *     <li>
+         *         Get next index: {@link Itr#nextIndex()}
+         *     </li>
+         *     <li>
+         *         Get previous index: {@link Itr#previousIndex()}
+         *     </li>
+         *     <li>
+         *         Get current index: {@link Itr#index()}
+         *     </li>
+         * </ul>
+         * </p>
+         *
+         * @param consumer the consumer that will consume the current element
+         *                 of iteration. This element is updated every
+         *                 iteration. Each element comes from the dynamic
+         *                 array's ordered set of elements.
+         * @see Itr#forEach(Consumer, int, int)
+         * @see Itr#forEach(Runnable)
+         * @see Itr#forEach(Runnable, int, int)
+         */
+        public void forEach(Consumer<E> consumer) {
+            forEach(consumer, 0, activeSize - 1);
+        }
+
+        /**
+         * Iterate over the {@code DynamicArray}'s data set. Any potential
+         * exceptions that occur during the loop's executions are handled
+         * by the {@code Itr} class' default exception handler, which will
+         * print the exception's stack trace.
+         *
+         * <p>
+         * For-each iteration isn't very expensive. As long as the array is
+         * not too large, running a for loop over each of the dynamic array's
+         * elements doesn't take very long at all.
+         * </p>
+         *
+         * <p>
+         * As the for loop goes through its iteration and execution, the
+         * index and current element will be updated. In addition to these
+         * values being updated, the {@code previous()} and {@code next()}
+         * methods will have their values changed. During loop execution, your
+         * consumer can access information about the array it's iterating over,
+         * such as previous, current, next elements and indexes.
+         * <ul>
+         *     <li>
+         *         Get next element: {@link Itr#next()}.
+         *     </li>
+         *     <li>
+         *         Get previous element: {@link Itr#previous()}.
+         *     </li>
+         *     <li>
+         *         Get current element: {@link Itr#element()}. Please note:
+         *         it's advised that you make use of the consumerized methods
+         *         provided by the iterator class to take advantage of the
+         *         consumer framework in Java.
+         *     </li>
+         *     <li>
+         *         Get next index: {@link Itr#nextIndex()}
+         *     </li>
+         *     <li>
+         *         Get previous index: {@link Itr#previousIndex()}
+         *     </li>
+         *     <li>
+         *         Get current index: {@link Itr#index()}
+         *     </li>
+         * </ul>
+         * </p>
+         *
+         * @param runnable the {@code Runnable} code that will be executed
+         *                 for each and every one of the requested range's
+         *                 values. If you're only planning on using the current
+         *                 element value, it is suggested that you make use of
+         *                 the {@code Consumer}-based for each loops provided
+         *                 in the iterator class. For more information on these
+         *                 consumer based loops, look at the see tags here.
+         * @param min      the minimum value that the for each loop should
+         *                 iterate over. Anything below this index value will
+         *                 be ignored by the loop.
+         * @param max      the maximum value that the for each loop should
+         *                 iterate over. Anything above this index value will
+         *                 be ignored by the loop.
+         * @see Itr#forEach(Consumer)
+         * @see Itr#forEach(Consumer, int, int)
+         */
+        public void forEach(Runnable runnable,
+                            int min,
+                            int max) {
+            Consumer<E> consumerized = e -> runnable.run();
+
+            forEach(consumerized, min, max);
+        }
+
+        /**
+         * Iterate over the {@code DynamicArray}'s data set. Any potential
+         * exceptions that occur during the loop's executions are handled
+         * by the {@code Itr} class' default exception handler, which will
+         * print the exception's stack trace.
+         *
+         * <p>
+         * For-each iteration isn't very expensive. As long as the array is
+         * not too large, running a for loop over each of the dynamic array's
+         * elements doesn't take very long at all.
+         * </p>
+         *
+         * <p>
+         * As the for loop goes through its iteration and execution, the
+         * index and current element will be updated. In addition to these
+         * values being updated, the {@code previous()} and {@code next()}
+         * methods will have their values changed. During loop execution, your
+         * consumer can access information about the array it's iterating over,
+         * such as previous, current, next elements and indexes.
+         * <ul>
+         *     <li>
+         *         Get next element: {@link Itr#next()}.
+         *     </li>
+         *     <li>
+         *         Get previous element: {@link Itr#previous()}.
+         *     </li>
+         *     <li>
+         *         Get current element: {@link Itr#element()}. Please note:
+         *         it's advised that you make use of the consumerized methods
+         *         provided by the iterator class to take advantage of the
+         *         consumer framework in Java.
+         *     </li>
+         *     <li>
+         *         Get next index: {@link Itr#nextIndex()}
+         *     </li>
+         *     <li>
+         *         Get previous index: {@link Itr#previousIndex()}
+         *     </li>
+         *     <li>
+         *         Get current index: {@link Itr#index()}
+         *     </li>
+         * </ul>
+         * </p>
+         *
+         * @param runnable the {@code Runnable} code that will be executed
+         *                 for each and every one of the requested range's
+         *                 values. If you're only planning on using the current
+         *                 element value, it is suggested that you make use of
+         *                 the {@code Consumer}-based for each loops provided
+         *                 in the iterator class. For more information on these
+         *                 consumer based loops, look at the see tags here.
+         * @see Itr#forEach(Consumer)
+         * @see Itr#forEach(Consumer, int, int)
+         */
+        public void forEach(Runnable runnable) {
+            forEach(runnable, 0, activeSize - 1);
+        }
+    }
+
+    /**
+     * The internally-used iterator. This iterator is instanced upon the
+     * creation of the {@code DynamicArray} and can not be interacted with,
+     * aside from getting it, using the {@link DynamicArray#itr()} method.
+     */
+    private final Itr _itr_internal_ = new Itr();
+
+    /**
+     * Get the {@code DynamicArray}'s iterator nested class. The iterator class
+     * provides iteration functionality for the {@code DynamicArray} data
+     * structure. Documentation on the iterator class's functionality is
+     * available in the iterator class itself - take a look at the "see" tags
+     * on this JavaDoc if you're confused.
+     *
+     * @return this {@code DynamicArray}'s iterator nested class. This class
+     * is generated at the {@code DynamicArray}'s construction and does not
+     * need to be maintained or interacted with other than to iterate over
+     * the array of elements.
+     * @see Itr
+     * @see Itr#previous()
+     * @see Itr#element()
+     * @see Itr#next()
+     * @see Itr#forEach(Runnable)
+     * @see Itr#forEach(Consumer)
+     */
+    public Itr itr() {
+        return _itr_internal_;
     }
 }
