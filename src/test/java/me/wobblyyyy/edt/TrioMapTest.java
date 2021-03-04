@@ -9,15 +9,15 @@ public class TrioMapTest {
         String stringB = "String B";
         String stringC = "String C";
 
-        TrioMap<String, Integer, Double> testMap = new TrioMap<>();
+        TrioMap<String, String, String> testMap = new TrioMap<>();
 
         testMap.add(
                 stringA,
-                10,
-                11.3
+                stringB,
+                stringA
         );
 
-        System.out.println("B from A: " + testMap.getWithA(stringA).getB());
+        System.out.println("B from A: " + testMap.getWithA(stringA).getA());
         System.out.println("C from A: " + testMap.getWithA(stringA).getB());
     }
 }

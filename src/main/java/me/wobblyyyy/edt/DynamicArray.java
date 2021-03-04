@@ -105,7 +105,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * @see DynamicArray#add(int, Object)
      */
     public DynamicArray() {
-        elements = EMPTY;
+        elements = Arrays.copyOf(EMPTY, DEFAULT_SIZE);
     }
 
     /**
@@ -134,7 +134,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      */
     public DynamicArray(int minSize) {
         this.minSize = minSize;
-        this.elements = EMPTY;
+        this.elements = Arrays.copyOf(EMPTY, minSize);
     }
 
     /**
