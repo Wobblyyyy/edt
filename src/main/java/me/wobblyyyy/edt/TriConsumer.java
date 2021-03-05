@@ -41,7 +41,9 @@ public interface TriConsumer<A, B, C> {
      * operation followed by the {@code after} operation.
      * @throws NullPointerException if {@code after} is null.
      */
-    default TriConsumer<A, B, C> andThen(TriConsumer<? super A, ? super B, ? super C> after) {
+    default TriConsumer<A, B, C> andThen(TriConsumer<? super A,
+            ? super B,
+            ? super C> after) {
         Objects.requireNonNull(after);
 
         return (aA, bB, cC) -> {
