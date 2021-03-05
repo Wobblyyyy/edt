@@ -1,60 +1,274 @@
 package me.wobblyyyy.edt;
 
 /**
- * A map designed to link three different object types together, allowing
- * you to get a {@link Pair} (or {@link Trio}) with ease. Note that this
- * class is a bit harder to use than a regular map. In addition to being
- * harder to use, this map takes up more memory and requires more CPU power
- * to get and set items. But oh well!
+ * A map that takes three parameters. Fancy, I know. Trio maps are based on
+ * groups of three elements, each of which serves as a key and a value at
+ * the same time. Because these trio maps utilize triplets, it can be very
+ * challenging to conceptualize and abstract at times. For this reason, it's
+ * suggested you make use of the other types of maps provided in this library
+ * whenever possible, ensuring a lot more readable code.
  *
- * @param <A> the first of three types in the map.
- * @param <B> the second of three types in the map.
- * @param <C> the third of three types in the map.
+ * @param <A> the type of object that the A values are.
+ * @param <B> the type of object that the B values are.
+ * @param <C> the type of object that the C values are.
  * @author Colin Robertson
  */
 public class TrioMap<A, B, C> {
-    private final DynamicArray<A> elementsA;
-    private final DynamicArray<B> elementsB;
-    private final DynamicArray<C> elementsC;
+    /**
+     * The minimum size of the map. Each of the component dynamic arrays in
+     * the trio map is initialized to that size.
+     */
+    private final int minSize;
 
+    /**
+     * A dynamic array.
+     */
+    private DynamicArray<A> elementsA;
+
+    /**
+     * B dynamic array.
+     */
+    private DynamicArray<B> elementsB;
+
+    /**
+     * C dynamic array.
+     */
+    private DynamicArray<C> elementsC;
+
+    /**
+     * The internal iterator class.
+     */
+    private final TrioIterator<A, B, C> _itr_internal_ =
+            new TrioIterator<>(() -> this);
+
+    /**
+     * Initialize all of the elements in the array. This method should only
+     * be utilized by trio map constructors.
+     */
+    private void initElements() {
+        elementsA = new DynamicArray<>(minSize);
+        elementsB = new DynamicArray<>(minSize);
+        elementsC = new DynamicArray<>(minSize);
+    }
+
+    /**
+     * Create a new trio map without any contained elements. This map has
+     * a default size of 10.
+     */
     public TrioMap() {
-        this.elementsA = new DynamicArray<>(10);
-        this.elementsB = new DynamicArray<>(10);
-        this.elementsC = new DynamicArray<>(10);
+        minSize = 10;
+        initElements();
     }
 
-    public void add(A valueA,
-                    B valueB,
-                    C valueC) {
-        elementsA.add(valueA);
-        elementsB.add(valueB);
-        elementsC.add(valueC);
+    /**
+     * Create a new trio map without any contained elements and a set size.
+     * Each of the internal arrays will allocate (at minimum) whatever size
+     * you input.
+     *
+     * @param minSize the minimum size for each of the component arrays. Having
+     *                a higher minimum size increases memory consumption and
+     *                allocation time, but, in turn, reduces required CPU power.
+     */
+    public TrioMap(int minSize) {
+        this.minSize = minSize;
+        initElements();
     }
 
-    public Pair<B, C> getWithA(A a) {
+    /**
+     * Add a trio of elements to the internal arrays.
+     *
+     * @param a the A value that should be added.
+     * @param b the B value that should be added.
+     * @param c the C value that should be added.
+     */
+    public void add(A a, B b, C c) {
+        elementsA.add(a);
+        elementsB.add(b);
+        elementsC.add(c);
+    }
+
+    /**
+     * Set B and C values based on A.
+     *
+     * @param a a value.
+     * @param b b value.
+     * @param c c value.
+     */
+    public void setByA(A a, B b, C c) {
         int index = elementsA.indexOf(a);
 
-        return new Pair<>(
+        elementsB.set(index, b);
+        elementsC.set(index, c);
+    }
+
+    /**
+     * Set A and C values based on B.
+     *
+     * @param a a value.
+     * @param b b value.
+     * @param c c value.
+     */
+    public void setByB(A a, B b, C c) {
+        int index = elementsB.indexOf(b);
+
+        elementsA.set(index, a);
+        elementsC.set(index, c);
+    }
+
+    /**
+     * Set A and B values based on C.
+     *
+     * @param a a value.
+     * @param b b value.
+     * @param c c value.
+     */
+    public void setByC(A a, B b, C c) {
+        int index = elementsC.indexOf(c);
+
+        elementsA.set(index, a);
+        elementsB.set(index, b);
+    }
+
+    /**
+     * Get the trio located at a specified index.
+     *
+     * @param index the index to find a trio based on.
+     * @return the trio element located at the requested value. This trio
+     * is made up of A, B, and C components and can be accessed using the
+     * methods provided in the {@link Trio} class. These values can NOT
+     * be modified - they're disconnected from the main component arrays.
+     * Any changes you make to the array will not be reflected.
+     * @see TrioMap#getByA(Object)
+     * @see TrioMap#getByB(Object)
+     * @see TrioMap#getByC(Object)
+     */
+    public Trio<A, B, C> getByIndex(int index) {
+        return new Trio<>(
+                elementsA.get(index),
                 elementsB.get(index),
                 elementsC.get(index)
         );
     }
 
-    public Pair<A, C> getWithB(B b) {
-        int index = elementsB.indexOf(b);
+    /**
+     * Get the trio located at the index of the first occurrence of the
+     * queried element.
+     *
+     * @param a the element to query.
+     * @return the trio element located at the requested value. This trio
+     * is made up of A, B, and C components and can be accessed using the
+     * methods provided in the {@link Trio} class. These values can NOT
+     * be modified - they're disconnected from the main component arrays.
+     * Any changes you make to the array will not be reflected.
+     */
+    public Trio<A, B, C> getByA(A a) {
+        int index = elementsA.indexOf(a);
 
-        return new Pair<>(
-                elementsA.get(index),
-                elementsC.get(index)
-        );
+        return getByIndex(index);
     }
 
-    public Pair<A, B> getWithC(C c) {
+    /**
+     * Get the trio located at the index of the first occurrence of the
+     * queried element.
+     *
+     * @param b the element to query.
+     * @return the trio element located at the requested value. This trio
+     * is made up of A, B, and C components and can be accessed using the
+     * methods provided in the {@link Trio} class. These values can NOT
+     * be modified - they're disconnected from the main component arrays.
+     * Any changes you make to the array will not be reflected.
+     */
+    public Trio<A, B, C> getByB(B b) {
+        int index = elementsB.indexOf(b);
+
+        return getByIndex(index);
+    }
+
+    /**
+     * Get the trio located at the index of the first occurrence of the
+     * queried element.
+     *
+     * @param c the element to query.
+     * @return the trio element located at the requested value. This trio
+     * is made up of A, B, and C components and can be accessed using the
+     * methods provided in the {@link Trio} class. These values can NOT
+     * be modified - they're disconnected from the main component arrays.
+     * Any changes you make to the array will not be reflected.
+     */
+    public Trio<A, B, C> getByC(C c) {
         int index = elementsC.indexOf(c);
 
-        return new Pair<>(
-                elementsA.get(index),
-                elementsB.get(index)
-        );
+        return getByIndex(index);
+    }
+
+    /**
+     * Remove the trio located at the requested index.
+     *
+     * @param index the index to remove a trio from.
+     */
+    public void removeByIndex(int index) {
+        elementsA.remove(index);
+        elementsB.remove(index);
+        elementsC.remove(index);
+    }
+
+    /**
+     * Remove the trio located at the index of the first occurrence of the
+     * queried value.
+     *
+     * @param a the value to query by.
+     */
+    public void removeByA(A a) {
+        removeByIndex(elementsA.indexOf(a));
+    }
+
+    /**
+     * Remove the trio located at the index of the first occurrence of the
+     * queried value.
+     *
+     * @param b the value to query by.
+     */
+    public void removeByB(B b) {
+        removeByIndex(elementsB.indexOf(b));
+    }
+
+    /**
+     * Remove the trio located at the index of the first occurrence of the
+     * queried value.
+     *
+     * @param c the value to query by.
+     */
+    public void removeByC(C c) {
+        removeByIndex(elementsC.indexOf(c));
+    }
+
+    /**
+     * Get the size of the trio map.
+     *
+     * @return the trio map's size.
+     */
+    public int size() {
+        return elementsA.size();
+    }
+
+    /**
+     * Reset the entire trio map. This empties the contents of each of the
+     * linked component arrays and re-initializes them. This will reset
+     * each of the arrays to the trio map's minimum size.
+     */
+    public void reset() {
+        elementsA = new DynamicArray<>(minSize);
+        elementsB = new DynamicArray<>(minSize);
+        elementsC = new DynamicArray<>(minSize);
+    }
+
+    /**
+     * Get the trio map's iterator. This iterator allows you to iterate over
+     * the entire trio map.
+     *
+     * @return the trio map's iterator.
+     */
+    public ItrTrio<A, B, C> itr() {
+        return _itr_internal_;
     }
 }

@@ -1,15 +1,37 @@
 package me.wobblyyyy.edt;
 
-public class Trio<A, B, C> extends Pair<A, B> {
-    private final C c;
+public class Trio<A, B, C> {
+    private A a;
+    private B b;
+    private C c;
 
     public Trio(A a, B b, C c) {
-        super(a, b);
-
+        this.a = a;
+        this.b = b;
         this.c = c;
+    }
+
+    public A getA() {
+        return a;
+    }
+
+    public B getB() {
+        return b;
     }
 
     public C getC() {
         return c;
+    }
+
+    public void setA(A a) {
+        this.a = a;
+    }
+
+    public void setB(B b) {
+        this.b = b;
+    }
+
+    public void setC(C c) {
+        this.c = c;
     }
 }
