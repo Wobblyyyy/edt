@@ -2,18 +2,51 @@ package me.wobblyyyy.edt;
 
 import java.util.function.Consumer;
 
+/**
+ * An iterator utility class designed for trio maps or data structures that
+ * contain three iterable sets of data.
+ *
+ * @param <A> the A parameter object type.
+ * @param <B> the B parameter object type.
+ * @param <C> the C parameter object type.
+ * @author Colin Robertson
+ */
 public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
+    /**
+     * The internally-stored index. This value is updated during iteration.
+     * Otherwise, it's practically invalid and should be ignored.
+     */
     private int index;
+
+    /**
+     * An internal consumer for exceptions. Exceptions that have nowhere else
+     * to go will be caught and passed to this consumer.
+     */
     private static final Consumer<Exception> exceptionConsumer =
             Throwable::printStackTrace;
+
+    /**
+     * An internal supplier for the {@link TrioMap} that this class will
+     * iterate over.
+     */
     private final TrioMapSupplier<A, B, C> supplier;
 
+    /**
+     * Create a new {@code TrioIterator} instance.
+     *
+     * @param supplier the iterator's map structure supplier.
+     */
     public TrioIterator(TrioMapSupplier<A, B, C> supplier) {
         this.supplier = supplier;
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @return the previous trio element. If this element isn't contained in
+     * the iterated set, a null pointer exception will be thrown.
+     * @throws NullPointerException if there is no previous element to
+     *                              reference.
      */
     @Override
     public Trio<A, B, C> previousElement() {
@@ -22,6 +55,11 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the previous A element. If this element isn't contained in
+     * the iterated set, a null pointer exception will be thrown.
+     * @throws NullPointerException if there is no previous element to
+     *                              reference.
      */
     @Override
     public A previousA() {
@@ -30,6 +68,11 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the previous B element. If this element isn't contained in
+     * the iterated set, a null pointer exception will be thrown.
+     * @throws NullPointerException if there is no previous element to
+     *                              reference.
      */
     @Override
     public B previousB() {
@@ -38,6 +81,11 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the previous C element. If this element isn't contained in
+     * the iterated set, a null pointer exception will be thrown.
+     * @throws NullPointerException if there is no previous element to
+     *                              reference.
      */
     @Override
     public C previousC() {
@@ -46,6 +94,9 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the current trio element. This method shouldn't ever throw
+     * any exceptions.
      */
     @Override
     public Trio<A, B, C> element() {
@@ -54,6 +105,9 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the current A element. This method shouldn't ever throw
+     * any exceptions.
      */
     @Override
     public A a() {
@@ -62,6 +116,9 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the current B element. This method shouldn't ever throw
+     * any exceptions.
      */
     @Override
     public B b() {
@@ -70,6 +127,9 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the current C element. This method shouldn't ever throw
+     * any exceptions.
      */
     @Override
     public C c() {
@@ -78,6 +138,10 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the next element. If there is no next element, a null pointer
+     * exception should be thrown.
+     * @throws NullPointerException if there is no next element.
      */
     @Override
     public Trio<A, B, C> nextElement() {
@@ -86,6 +150,10 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the next A element. If there is no next element, a null pointer
+     * exception should be thrown.
+     * @throws NullPointerException if there is no next element.
      */
     @Override
     public A nextA() {
@@ -94,6 +162,10 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the next B element. If there is no next element, a null pointer
+     * exception should be thrown.
+     * @throws NullPointerException if there is no next element.
      */
     @Override
     public B nextB() {
@@ -102,6 +174,10 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the next C element. If there is no next element, a null pointer
+     * exception should be thrown.
+     * @throws NullPointerException if there is no next element.
      */
     @Override
     public C nextC() {
@@ -110,6 +186,8 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the previous index. This index can be -1.
      */
     @Override
     public int previousIndex() {
@@ -118,6 +196,8 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the current index.
      */
     @Override
     public int index() {
@@ -126,6 +206,8 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return the next index. This index can be out of bounds!
      */
     @Override
     public int nextIndex() {
@@ -134,6 +216,10 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @param runnable the code to be executed for each of the elements.
+     * @param min the minimum element in the iterated set.
+     * @param max the maximum element in the iterated set.
      */
     @Override
     public void forEach(Runnable runnable, int min, int max) {
@@ -152,6 +238,8 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @param runnable the code to be executed for each of the elements.
      */
     @Override
     public void forEach(Runnable runnable) {
@@ -160,6 +248,10 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @param consumer the code to be executed for each of the elements.
+     * @param min the minimum element in the iterated set.
+     * @param max the maximum element in the iterated set.
      */
     @Override
     public void forEach(TriConsumer<A, B, C> consumer, int min, int max) {
@@ -182,6 +274,8 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
 
     /**
      * {@inheritDoc}
+     *
+     * @param consumer the code to be executed for each of the elements.
      */
     @Override
     public void forEach(TriConsumer<A, B, C> consumer) {

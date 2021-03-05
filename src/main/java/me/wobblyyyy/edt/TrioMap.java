@@ -213,6 +213,141 @@ public class TrioMap<A, B, C> {
     }
 
     /**
+     * Get a requested value by using two other components of the trio as
+     * "key" elements. If these elements aren't contained in the array at the
+     * same index, return null.
+     *
+     * @param b one of the two query keys.
+     * @param c one of the two query keys.
+     * @return if the index of both of the requested keys is the same, return
+     * the requested value for that given index. If the index of the two
+     * requested keys is not the same, return null. No exceptions thrown here.
+     */
+    public A getA(B b, C c) {
+        final int testIndex;
+        int index = (testIndex = elementsB.indexOf(b))
+                == elementsC.indexOf(c) ? testIndex : -1;
+
+        return testIndex >= 0 ? elementsA.get(index) : null;
+    }
+
+    /**
+     * Get a requested value by using two other components of the trio as
+     * "key" elements. If these elements aren't contained in the array at the
+     * same index, return null.
+     *
+     * @param a one of the two query keys.
+     * @param c one of the two query keys.
+     * @return if the index of both of the requested keys is the same, return
+     * the requested value for that given index. If the index of the two
+     * requested keys is not the same, return null. No exceptions thrown here.
+     */
+    public B getB(A a, C c) {
+        final int testIndex;
+        int index = (testIndex = elementsA.indexOf(a))
+                == elementsC.indexOf(c) ? testIndex : -1;
+
+        return testIndex >= 0 ? elementsB.get(index) : null;
+    }
+
+    /**
+     * Get a requested value by using two other components of the trio as
+     * "key" elements. If these elements aren't contained in the array at the
+     * same index, return null.
+     *
+     * @param a one of the two query keys.
+     * @param b one of the two query keys.
+     * @return if the index of both of the requested keys is the same, return
+     * the requested value for that given index. If the index of the two
+     * requested keys is not the same, return null. No exceptions thrown here.
+     */
+    public C getC(A a, B b) {
+        final int testIndex;
+        int index = (testIndex = elementsA.indexOf(a))
+                == elementsB.indexOf(b) ? testIndex : -1;
+
+        return testIndex >= 0 ? elementsC.get(index) : null;
+    }
+
+    /**
+     * Put a value based on two other key values. If both of these key values
+     * are not included in the trio map at the time this method is executed,
+     * a new entry will be added to the trio map with the specified A, B, and
+     * C values. If the key values are present, the desired value will be
+     * updated.
+     *
+     * @param a one of the three A, B, C values.
+     * @param b one of the three A, B, C values.
+     * @param c one of the three A, B, C values.
+     */
+    @SuppressWarnings("DuplicatedCode")
+    public void putA(A a, B b, C c) {
+        int indexB = elementsB.indexOf(b);
+        int indexC = elementsC.indexOf(c);
+
+        if (indexB == indexC) {
+            elementsA.set(indexB, a);
+            return;
+        }
+
+        if (indexB < 0 || indexC < 0) {
+            add(a, b, c);
+        }
+    }
+
+    /**
+     * Put a value based on two other key values. If both of these key values
+     * are not included in the trio map at the time this method is executed,
+     * a new entry will be added to the trio map with the specified A, B, and
+     * C values. If the key values are present, the desired value will be
+     * updated.
+     *
+     * @param a one of the three A, B, C values.
+     * @param b one of the three A, B, C values.
+     * @param c one of the three A, B, C values.
+     */
+    @SuppressWarnings("DuplicatedCode")
+    public void putB(A a, B b, C c) {
+        int indexA = elementsA.indexOf(a);
+        int indexC = elementsC.indexOf(c);
+
+        if (indexA == indexC) {
+            elementsB.set(indexA, b);
+            return;
+        }
+
+        if (indexA < 0 || indexC < 0) {
+            add(a, b, c);
+        }
+    }
+
+    /**
+     * Put a value based on two other key values. If both of these key values
+     * are not included in the trio map at the time this method is executed,
+     * a new entry will be added to the trio map with the specified A, B, and
+     * C values. If the key values are present, the desired value will be
+     * updated.
+     *
+     * @param a one of the three A, B, C values.
+     * @param b one of the three A, B, C values.
+     * @param c one of the three A, B, C values.
+     */
+    @SuppressWarnings("DuplicatedCode")
+    public void putC(A a, B b, C c) {
+        int indexA = elementsA.indexOf(a);
+        int indexB = elementsB.indexOf(b);
+
+        if (indexA == indexB) {
+            elementsC.set(indexA, c);
+            return;
+        }
+
+        if (indexA < 0 || indexB < 0) {
+            add(a, b, c);
+        }
+    }
+
+    /**
      * Remove the trio located at the index of the first occurrence of the
      * queried value.
      *
