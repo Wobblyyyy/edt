@@ -233,6 +233,7 @@ public class DynamicArray<E> implements Arrayable<E> {
      * elements as the initialization elements. These elements can be updated
      * later with the methods provided in the {@link DynamicArray} class.
      *
+     * @param minSize  the minimum size of the array.
      * @param elements an array, containing all of the {@link Object} instances
      *                 that should be set as the {@code DynamicArray}'s
      *                 contents upon construction.

@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 
 /**
  * Iterator used and shared by all sorts of arrays.
- *
+ * <p>
  * {@inheritDoc}
  *
  * @param <E> the type of content that the iterator holds.
@@ -78,10 +78,7 @@ public class ArrayIterator<E> implements ItrSingle<E> {
      */
     @Override
     public E previous() {
-        if (supplier.get().checkIndex(index - 1)) {
-            return supplier.get().get(index - 1);
-        }
-        return null;
+        return supplier.get().get(index - 1);
     }
 
     /**
@@ -89,10 +86,7 @@ public class ArrayIterator<E> implements ItrSingle<E> {
      */
     @Override
     public E element() {
-        if (supplier.get().checkIndex(index)) {
-            return supplier.get().get(index);
-        }
-        return null;
+        return supplier.get().get(index);
     }
 
     /**
@@ -100,10 +94,7 @@ public class ArrayIterator<E> implements ItrSingle<E> {
      */
     @Override
     public E next() {
-        if (supplier.get().checkIndex(index + 1)) {
-            return supplier.get().get(index + 1);
-        }
-        return null;
+        return supplier.get().get(index + 1);
     }
 
     /**
