@@ -292,7 +292,7 @@ public class TrioIterator<A, B, C> implements ItrTrio<A, B, C> {
     public void forEach(TriConsumer<A, B, C> consumer, int min, int max) {
         index = min;
 
-        while (index <= min) {
+        while (index <= max) {
             try {
                 consumer.accept(
                        a(),
