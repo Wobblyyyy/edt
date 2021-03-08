@@ -102,10 +102,7 @@ public class ArrayIterator<E> implements ItrSingle<E> {
      */
     @Override
     public int previousIndex() {
-        if (supplier.get().checkIndex(index - 1)) {
-            return index - 1;
-        }
-        return -1;
+        return index - 1;
     }
 
     /**
@@ -121,10 +118,7 @@ public class ArrayIterator<E> implements ItrSingle<E> {
      */
     @Override
     public int nextIndex() {
-        if (supplier.get().checkIndex(index + 1)) {
-            return index + 1;
-        }
-        return -1;
+        return index + 1;
     }
 
     /**
@@ -132,16 +126,12 @@ public class ArrayIterator<E> implements ItrSingle<E> {
      */
     @Override
     public void forEach(Consumer<E> consumer, int min, int max) {
-        index = min;
-
-        while (index <= max) {
+        for (index = min; index <= max; index++) {
             try {
                 consumer.accept(element());
             } catch (Exception e) {
                 exceptionConsumer.accept(e);
             }
-
-            index += 1;
         }
     }
 
@@ -158,16 +148,12 @@ public class ArrayIterator<E> implements ItrSingle<E> {
      */
     @Override
     public void forEach(Runnable runnable, int min, int max) {
-        index = min;
-
-        while (index <= max) {
+        for (index = min; index <= max; index++) {
             try {
                 runnable.run();
             } catch (Exception e) {
                 exceptionConsumer.accept(e);
             }
-
-            index += 1;
         }
     }
 
