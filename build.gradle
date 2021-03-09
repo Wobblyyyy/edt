@@ -38,6 +38,14 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compile
+}
+
+group 'com.github.Wobblyyyy'
+version '1.4.0'
+
 repositories {
     jcenter()
 }
